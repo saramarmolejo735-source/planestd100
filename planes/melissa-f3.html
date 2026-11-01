@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}body{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Transformación 100 Días</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: pila vertical de "fichas de servicio" — una cosa a la vez, pulgar en el borde. */
+:root{
+  --paper:#fbf9f7; --surface:#ffffff; --line:#e7e0dc;
+  --ink:#231a1e; --ink-2:#6b5d62; --ink-3:#978a8e;
+  --acc:#5b2740; --acc-soft:#f6ecf0; --acc-line:#e3c9d4;
+  --ocre:#b8721a; --ocre-soft:#fdf3e4; --ocre-line:#eed9b4;
+  --salvia:#4a7055; --salvia-soft:#eef4ef; --salvia-line:#cadcd0;
+  --alerta:#a8412f; --alerta-soft:#fceee9;
+  --d:'Instrument Serif',Georgia,serif;
+  --b:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --m:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#151013; --surface:#1e171b; --line:#352b30;
+  --ink:#f3ecef; --ink-2:#b3a3aa; --ink-3:#8a7a81;
+  --acc:#e9a7c0; --acc-soft:#2a1a22; --acc-line:#452c37;
+  --ocre:#e8b566; --ocre-soft:#2a2016; --ocre-line:#4a3920;
+  --salvia:#8fc09e; --salvia-soft:#1a241d; --salvia-line:#2f4436;
+  --alerta:#f0917c; --alerta-soft:#2d1a16;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#151013; --surface:#1e171b; --line:#352b30;
+  --ink:#f3ecef; --ink-2:#b3a3aa; --ink-3:#8a7a81;
+  --acc:#e9a7c0; --acc-soft:#2a1a22; --acc-line:#452c37;
+  --ocre:#e8b566; --ocre-soft:#2a2016; --ocre-line:#4a3920;
+  --salvia:#8fc09e; --salvia-soft:#1a241d; --salvia-line:#2f4436;
+  --alerta:#f0917c; --alerta-soft:#2d1a16;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--b);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);
+  z-index:30;background:var(--acc)}
+.wrap{max-width:720px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;margin:0}
+.mono{font-family:var(--m);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--ocre);outline-offset:2px;border-radius:6px}
+
+/* ---- hero ---- */
+.hero{background:var(--acc);color:#fdf7f9}
+:root[data-theme="dark"] .hero,
+:root:not([data-theme="light"]) .hero{background:#2a1320}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .hero{background:var(--acc)}}
+.hero .wrap{padding-block:34px 26px}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  color:rgba(255,255,255,.72);margin-bottom:10px}
+.hero h1{font-family:var(--d);font-size:clamp(33px,8.6vw,54px);line-height:.95;letter-spacing:-.01em;color:#fff}
+.hero .lede{margin-top:14px;font-size:17px;color:rgba(255,255,255,.85);max-width:34em}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:22px}
+.tile{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.17);
+  border-radius:11px;padding:11px 8px;text-align:center}
+.tile b{display:block;font-family:var(--m);font-size:19px;font-weight:500;color:#fff;line-height:1.1}
+.tile span{display:block;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin-top:5px;font-weight:600}
+@media (max-width:430px){.tiles{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- navegación pegajosa ---- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--acc);
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.nav .scroll{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:9px;
+  max-width:720px;margin:0 auto}
+.nav .scroll::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;color:rgba(255,255,255,.76);text-decoration:none;font-size:13px;font-weight:600;
+  padding:7px 13px;border-radius:99px;white-space:nowrap}
+.nav a.on{background:#fff;color:var(--hero)}
+
+/* ---- secciones ---- */
+section{padding-block:30px 10px;scroll-margin-top:72px}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+.sec-h .n{font-family:var(--m);font-size:12px;color:var(--acc);font-weight:500}
+.sec-h h2{font-family:var(--d);font-size:30px;line-height:1.05}
+.sec-p{color:var(--ink-2);font-size:15px;margin:0 0 16px;max-width:36em}
+
+/* ---- tarjeta plegable ---- */
+.fold{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  margin-bottom:9px;overflow:hidden}
+.fold>button{width:100%;display:flex;align-items:center;gap:12px;padding:15px 16px;
+  background:none;border:0;text-align:left}
+.fold>button .ic{flex:0 0 32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  font-family:var(--m);font-size:13px;font-weight:500;background:var(--acc-soft);color:var(--acc)}
+.fold>button .tt{flex:1;min-width:0;font-weight:600;font-size:15.5px}
+.fold>button .tt small{display:block;font-weight:400;font-size:13px;color:var(--ink-3);margin-top:1px}
+.fold>button .ch{flex:0 0 auto;color:var(--ink-3);transition:transform .22s}
+.fold.open>button .ch{transform:rotate(180deg)}
+.fold .body{padding:0 16px 16px;font-size:14.5px;color:var(--ink-2)}
+.fold .body>p{margin:0 0 9px}.fold .body>p:last-child{margin-bottom:0}
+.fold .body strong{color:var(--ink)}
+
+/* ---- timeline del día ---- */
+.tl{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tl-row{display:flex;gap:11px;padding:12px 15px;border-bottom:1px solid var(--line);align-items:flex-start}
+.tl-row:last-child{border-bottom:0}
+.tl-row.key{background:var(--acc-soft)}
+.tl-row .t{flex:0 0 46px;font-family:var(--m);font-size:12.5px;color:var(--ink-3);padding-top:2px}
+.tl-row .c{flex:1;min-width:0}
+.tl-row .c b{display:block;font-size:14.5px}
+.tl-row .c span{display:block;font-size:13px;color:var(--ink-2);margin-top:2px}
+.chk{flex:0 0 26px;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);
+  background:var(--surface);display:grid;place-items:center;padding:0;transition:.15s}
+.chk[aria-pressed="true"]{background:var(--salvia);border-color:var(--salvia)}
+.chk svg{opacity:0;stroke:#fff;transition:.15s}
+.chk[aria-pressed="true"] svg{opacity:1}
+.tl-foot{display:flex;align-items:center;gap:10px;justify-content:space-between;
+  padding:11px 15px;background:var(--salvia-soft);border-top:1px solid var(--line);font-size:13.5px}
+.tl-foot button{background:none;border:0;color:var(--ink-3);font-size:12.5px;text-decoration:underline;padding:0}
+
+/* ---- selector de días ---- */
+.days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:13px}
+.days::-webkit-scrollbar{display:none}
+.day-b{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:11px;
+  padding:9px 13px;text-align:center;line-height:1.25}
+.day-b b{display:block;font-size:13.5px;font-weight:700}
+.day-b span{display:block;font-size:10.5px;color:var(--ink-3);font-family:var(--m)}
+.day-b.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.day-b.on span{color:rgba(255,255,255,.72)}
+
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  margin-bottom:9px;overflow:hidden}
+.meal-h{display:flex;align-items:center;gap:11px;padding:12px 15px;background:var(--acc-soft);
+  border-bottom:1px solid var(--acc-line)}
+.meal-h .hh{font-family:var(--m);font-size:13px;color:var(--acc);font-weight:500}
+.meal-h .nn{flex:1;min-width:0;font-weight:700;font-size:14.5px}
+.meal-h .kk{font-family:var(--m);font-size:12px;color:var(--ink-2);text-align:right;line-height:1.3}
+.meal ul{list-style:none;margin:0;padding:9px 15px}
+.meal li{display:flex;gap:9px;padding:5px 0;font-size:14.5px;align-items:baseline}
+.meal li::before{content:"";flex:0 0 5px;height:5px;border-radius:50%;background:var(--ocre);
+  transform:translateY(-2px)}
+.meal li em{font-style:normal;color:var(--ink-3);font-family:var(--m);font-size:12.5px}
+.meal .alc{margin:0 15px 13px;padding:9px 12px;background:var(--ocre-soft);
+  border:1px solid var(--ocre-line);border-radius:10px;font-size:13px;color:var(--ink-2)}
+.meal .alc b{color:var(--ocre)}
+
+/* ---- herramienta de hambre ---- */
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 17px}
+.q{font-family:var(--d);font-size:25px;line-height:1.14;margin-bottom:5px}
+.q-sub{color:var(--ink-2);font-size:14.5px;margin-bottom:16px}
+.opts{display:grid;gap:8px}
+.opt{width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);
+  border-radius:11px;padding:14px 15px;font-size:15px;font-weight:500;transition:.14s}
+.opt:hover{border-color:var(--acc)}
+.verdict{text-align:center;padding:6px 0 2px}
+.verdict .big{font-family:var(--d);font-size:30px;line-height:1.1;margin-bottom:9px}
+.verdict p{color:var(--ink-2);font-size:14.5px;margin:0 auto 14px;max-width:30em}
+.pill{display:inline-block;font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;padding:5px 11px;border-radius:99px;margin-bottom:11px}
+.pill.fis{background:var(--salvia-soft);color:var(--salvia);border:1px solid var(--salvia-line)}
+.pill.emo{background:var(--ocre-soft);color:var(--ocre);border:1px solid var(--ocre-line)}
+.restart{background:none;border:1px solid var(--line);border-radius:99px;padding:8px 17px;
+  font-size:13.5px;color:var(--ink-2)}
+.steps{display:flex;gap:5px;justify-content:center;margin-bottom:17px}
+.steps i{width:22px;height:3px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--acc)}
+
+/* ---- azúcar de la fruta ---- */
+.sugar{display:grid;gap:7px}
+.bar-row{display:grid;grid-template-columns:1fr 2.1fr auto;gap:10px;align-items:center;font-size:14px}
+.bar-track{height:21px;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;background:var(--salvia);width:0;transition:width .85s cubic-bezier(.2,.7,.3,1)}
+.bar-row.bad .bar-fill{background:var(--alerta)}
+.bar-row .g{font-family:var(--m);font-size:13px;color:var(--ink-2);min-width:44px;text-align:right}
+
+/* ---- semáforo ---- */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.fchip{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;
+  padding:7px 14px;font-size:13.5px;font-weight:600}
+.fchip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.search{width:100%;padding:12px 15px;border:1.5px solid var(--line);border-radius:11px;
+  background:var(--surface);color:var(--ink);font:inherit;font-size:15px;margin-bottom:11px}
+.foods{display:flex;flex-wrap:wrap;gap:6px}
+.food{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;
+  padding:7px 11px;font-size:13.5px;background:var(--surface)}
+.food i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.food.v i{background:var(--salvia)} .food.a i{background:var(--ocre)} .food.r i{background:var(--alerta)}
+.food small{color:var(--ink-3);font-family:var(--m);font-size:11.5px}
+.empty{color:var(--ink-3);font-size:14px;padding:14px 0}
+
+/* ---- notas ---- */
+.note{border-left:3px solid var(--ocre);background:var(--ocre-soft);border-radius:0 11px 11px 0;
+  padding:13px 15px;font-size:14px;color:var(--ink-2);margin-top:13px}
+.note b{color:var(--ink)}
+.note.alert{border-color:var(--alerta);background:var(--alerta-soft)}
+.note.ok{border-color:var(--salvia);background:var(--salvia-soft)}
+
+/* ---- medir ---- */
+.tests{display:grid;gap:8px}
+.test{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:13px 15px}
+.test .nm{flex:0 0 26px;height:26px;border-radius:7px;background:var(--acc);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:12px}
+.test .tx{flex:1;min-width:0;font-size:14.5px}
+.test input{width:62px;padding:7px;border:1.5px solid var(--line);border-radius:8px;
+  background:var(--paper);color:var(--ink);font-family:var(--m);font-size:14px;text-align:center}
+
+.cierre{margin-top:18px}
+.cierre .note{font-size:14.5px}
+footer{border-top:1px solid var(--line);margin-top:34px}
+footer .wrap{padding-block:22px 30px;text-align:center;color:var(--ink-3);font-size:12.5px}
+footer b{color:var(--ink-2);display:block;font-size:13.5px;margin-bottom:3px}
+/* ---- suplementos ---- */
+.fold>button .ic.h{flex:0 0 50px;font-size:11.5px;letter-spacing:-.02em;
+  background:var(--ocre-soft);color:var(--ocre)}
+.st{flex:0 0 auto;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+  padding:4px 9px;border-radius:99px;white-space:nowrap}
+.st.sigue{background:var(--salvia-soft);color:var(--salvia);border:1px solid var(--salvia-line)}
+.st.nuevo{background:var(--acc-soft);color:var(--acc);border:1px solid var(--acc-line)}
+.st.para{background:var(--alerta-soft);color:var(--alerta);border:1px solid var(--alerta-soft)}
+.st.opc{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
+@media (max-width:440px){.fold>button .st{font-size:8.5px;padding:3px 6px;letter-spacing:.04em}
+  .fold>button .tt{font-size:14.5px}}
+.flag{display:inline-block;font-family:var(--m);font-size:10.5px;padding:2px 7px;border-radius:5px;
+  margin-right:5px;vertical-align:1px}
+.flag.ok{background:var(--salvia-soft);color:var(--salvia)}
+.flag.chk{background:var(--ocre-soft);color:var(--ocre)}
+
+/* ---- tabla de suplementos ---- */
+.sub-h{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:700;margin:20px 0 8px}
+.tabla{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;margin-bottom:11px}
+.tabla .tr{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--line)}
+.tabla .tr:last-child{border-bottom:0}
+.tabla .h{flex:0 0 52px;font-size:11px;color:var(--acc);line-height:1.25}
+.tabla .nm3{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.tabla .nm3 small{display:block;color:var(--ink-3);font-size:11.5px}
+.tabla .ds{flex:0 0 auto;font-size:11.5px;color:var(--ink-2);text-align:right}
+.tabla .st{flex:0 0 auto}
+@media (max-width:430px){.tabla .ds{display:none}}
+
+/* ---- intercambios ---- */
+.bud{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:13px}
+@media (max-width:560px){.bud{grid-template-columns:repeat(3,1fr)}}
+.bud div{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  padding:10px 5px;text-align:center}
+.bud b{display:block;font-family:var(--m);font-size:19px;font-weight:500;line-height:1.1;color:var(--acc)}
+.bud span{display:block;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:4px;font-weight:600}
+.sw-head{background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:12px;
+  padding:12px 15px;margin-bottom:9px;font-size:14px;color:var(--ink-2)}
+.sw-head b{color:var(--acc)}
+.sw-list{display:grid;gap:6px}
+.sw{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--surface);
+  border:1.5px solid var(--line);border-radius:11px;padding:11px 14px;transition:.14s}
+.sw:hover{border-color:var(--acc)}
+.sw.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.sw .nm2{flex:1;min-width:0;font-size:14.5px;font-weight:500}
+.sw .pr{font-family:var(--m);font-size:12.5px;color:var(--ink-3);text-align:right}
+.sw.on .pr{color:rgba(255,255,255,.76)}
+
+/* ---- mercado ---- */
+.mk-grp{margin-bottom:14px}
+.mk-grp h3{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:7px;font-weight:700}
+.mk-list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mk{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line);padding:11px 14px}
+.mk:last-child{border-bottom:0}
+.mk .nm2{flex:1;min-width:0;font-size:14.5px}
+.mk .qt{font-family:var(--m);font-size:12.5px;color:var(--ink-3);text-align:right}
+.mk.got .nm2,.mk.got .qt{text-decoration:line-through;color:var(--ink-3);opacity:.6}
+.mk-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--salvia-soft);border:1px solid var(--salvia-line);border-radius:12px;
+  padding:11px 15px;margin-bottom:13px;font-size:13.5px}
+.mk-bar button{background:none;border:0;color:var(--ink-3);font-size:12.5px;text-decoration:underline;padding:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- acento por fase ---- */
+:root[data-fase="2"]{--acc:#1d4f61;--acc-soft:#e8f0f3;--acc-line:#c2d8e0}
+:root[data-fase="3"]{--acc:#8a4420;--acc-soft:#fbeee6;--acc-line:#eccfb9}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"])[data-fase="2"]{--acc:#8fc8dd;--acc-soft:#15242b;--acc-line:#274049}
+  :root:not([data-theme="light"])[data-fase="3"]{--acc:#efab76;--acc-soft:#2a1b12;--acc-line:#4a3122}}
+:root[data-theme="dark"][data-fase="2"]{--acc:#8fc8dd;--acc-soft:#15242b;--acc-line:#274049}
+:root[data-theme="dark"][data-fase="3"]{--acc:#efab76;--acc-soft:#2a1b12;--acc-line:#4a3122}
+
+/* ---- cita textual de la alumna ---- */
+.cita{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-left:3px solid rgba(255,255,255,.55);border-radius:0 13px 13px 0;
+  padding:15px 17px;margin-top:20px}
+.cita q{font-family:var(--d);font-size:clamp(19px,5vw,23px);line-height:1.25;color:#fff;
+  display:block;quotes:'\201C' '\201D'}
+.cita cite{display:block;font-style:normal;font-size:12px;color:rgba(255,255,255,.62);margin-top:9px;
+  letter-spacing:.03em}
+/* ---- mensaje personal ---- */
+.carta{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:19px 18px;position:relative;margin-bottom:13px}
+.carta::before{content:"";position:absolute;left:0;top:19px;bottom:19px;width:3px;
+  background:var(--acc);border-radius:0 3px 3px 0}
+.carta p{font-size:15.5px;line-height:1.62;color:var(--ink-2);margin:0 0 13px}
+.carta p:first-child{font-size:16.5px;color:var(--ink)}
+.carta p strong,.carta p b{color:var(--ink)}
+.firma-carta{display:flex;align-items:center;gap:13px;margin-top:17px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.firma-carta .rub{font-family:var(--d);font-style:italic;font-size:30px;color:var(--acc);line-height:1}
+.firma-carta span:last-child{font-size:12px;color:var(--ink-3);line-height:1.4}
+/* ---- la fase ---- */
+.fase-card{background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:15px;
+  padding:18px 17px;margin-bottom:11px}
+.fase-card .ttl{font-family:var(--d);font-size:24px;line-height:1.1;color:var(--acc);margin-bottom:7px}
+.fase-card p{font-size:14.5px;color:var(--ink-2);margin:0 0 9px}
+.fase-card p:last-child{margin-bottom:0}
+.pilares{display:grid;gap:7px;margin-top:12px}
+.pilar{display:flex;gap:10px;align-items:flex-start;background:var(--surface);
+  border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+.pilar .pn{flex:0 0 22px;height:22px;border-radius:6px;background:var(--acc);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:11px}
+.pilar .pt{flex:1;min-width:0;font-size:14px}
+.pilar .pt b{display:block}
+.pilar .pt span{color:var(--ink-3);font-size:12.5px}
+.ruta{display:flex;gap:5px;align-items:stretch;margin-bottom:13px}
+.ruta div{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 7px;text-align:center;
+  background:var(--surface);font-size:11.5px;color:var(--ink-3);line-height:1.3}
+.ruta div b{display:block;font-size:13px;color:var(--ink-2)}
+.ruta div.now{background:var(--acc);border-color:var(--acc);color:#fff}
+.ruta div.now b{color:#fff}
+.ruta div.done{opacity:.55}
+/* ---- calendario de semanas ---- */
+.cal{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:11px}
+.cal .cr{display:flex;gap:10px;padding:11px 13px;border-bottom:1px solid var(--line);align-items:flex-start}
+.cal .cr:last-child{border-bottom:0}
+.cal .cr.hd{background:var(--acc-soft);font-weight:700;font-size:12px;color:var(--acc);
+  text-transform:uppercase;letter-spacing:.06em}
+.cal .cw{flex:0 0 54px;font-family:var(--m);font-size:12px;color:var(--ink-3);line-height:1.3}
+.cal .cc{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
+.cal .cc b{display:block;color:var(--ink)}
+/* ---- entrenamiento ---- */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:9px}
+.ex-h{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--acc-soft);
+  border-bottom:1px solid var(--acc-line);font-weight:700;font-size:14px}
+.ex-h .en{flex:0 0 auto;font-family:var(--m);font-size:12px;color:var(--acc);
+  background:var(--surface);border-radius:6px;padding:3px 8px}
+.ex ul{list-style:none;margin:0;padding:7px 14px}
+.ex li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13.5px;
+  border-bottom:1px solid var(--line)}
+.ex li:last-child{border-bottom:0}
+.ex li span{color:var(--ink-2)}
+.ex li em{font-style:normal;font-family:var(--m);font-size:12.5px;color:var(--ink-3);flex:0 0 auto}
+</style>
+</head>
+<body>
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   TRANSFORMACIÓN 100 DÍAS · FASE 3
+   ND. MsC. Sara C. Marmolejo — Nutricionista Dietista, énfasis clínico
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ══ BLOQUE A · DOCTRINA DEL PROGRAMA — NO SE TOCA ══════════════════ */
+const FASES = {
+1:{ titulo:'Microbiota y digestión',
+    nom:'Microbiota, digestión y desinflamación intestinal',
+    corto:'Primero reparamos', dias:'Días 1 al 33',
+    obj:'Restaurar el equilibrio de tu flora intestinal, reducir la permeabilidad de la mucosa, desinflamar el tracto digestivo y normalizar la fermentación bacteriana.',
+    porque:'Nada de lo que viene después funciona bien si el intestino está inflamado. Esta fase construye el terreno para que las fases 2 y 3 sí hagan efecto.',
+    pilares:[['Microbiota y disbiosis','Restaurar la eubiosis por el eje intestino-cerebro'],
+             ['FODMAPs','Reducir la fermentación que te hincha'],
+             ['Probióticos estratégicos','Diversidad microbiana, solo si tu caso lo pide']],
+    espera:['Menos hinchazón y menos gases','Digestión más predecible',
+            'Energía más pareja durante el día','Menos antojos de dulce',
+            'El peso que se mueve es sobre todo agua intestinal y glucógeno']},
+2:{ titulo:'Regulación hormonal',
+    nom:'Regulación hormonal integral',
+    corto:'Ahora optimizamos', dias:'Días 34 al 66',
+    obj:'Normalizar el eje del cortisol, dejar que las hormonas de la saciedad (GLP-1 y GIP) trabajen sin interferencia inflamatoria, y sincronizar tus ritmos circadianos.',
+    porque:'Con el intestino ya reparado, tu cuerpo por fin puede responder a las estrategias hormonales. Antes de la Fase 1 esto no habría servido de nada.',
+    pilares:[['Eje del cortisol (HPA)','Equilibrio neuroendocrino con adaptógenos y descanso'],
+             ['Incretinas GLP-1 y GIP','Saciedad y glucosa estables desde la comida'],
+             ['Sincronización circadiana','Luz de la mañana, oscuridad de la noche, horarios fijos']],
+    espera:['Energía estable todo el día, sin caídas','Menos antojos y menos hambre emocional',
+            'Mejor calidad de sueño','Apetito y saciedad que se autorregulan',
+            'Menos estrés percibido','Glucosa más estable después de comer']},
+3:{ titulo:'Metabolismo y composición',
+    nom:'Metabolismo, composición corporal y rendimiento',
+    corto:'Por fin exigimos', dias:'Días 67 al 100',
+    obj:'Aumentar tu capacidad mitocondrial, lograr pérdida de grasa real sin que el cuerpo active defensas, y optimizar la ganancia de músculo con proteína estratégica, cargas altas y ciclado de carbohidratos.',
+    porque:'Esta fase solo es posible porque las Fases 1 y 2 ya resolvieron la inflamación intestinal y la desregulación hormonal. Empezar por aquí es lo que hace fracasar a las dietas.',
+    pilares:[['Composición corporal','Proteína estratégica para ganar músculo'],
+             ['Oxidación de grasa','Activar AMPK y PGC-1α: pérdida de grasa real'],
+             ['Ciclado de carbohidratos','Flexibilidad metabólica y eficiencia energética']],
+    espera:['Cambio visible en composición: menos grasa, igual o más músculo',
+            'Más rendimiento y resistencia','Más energía con menos comida',
+            'Mínimo efecto rebote, gracias al trabajo de las fases anteriores',
+            'Una relación sana con la comida y claridad sobre cómo responde tu cuerpo']}
+};
+const SEC = ['Primero reparamos','Ahora optimizamos','Por fin exigimos'];
+
+/* ══ BLOQUE B · DATOS DE LA ALUMNA — LO ÚNICO QUE CAMBIAS ═══════════ */
+const A = {
+
+fase: 3,
+nombre: 'Melissa',
+edad: 46, ciudad: 'Naples, Florida',
+inicio: '3 de noviembre', fin: '6 de diciembre',
+
+cita: 'Quiero bajar de peso, recomposición corporal y mejorar las piernas; y tener solo desayuno, almuerzo y cena, sin pensar que debo hacer snack.',
+citaDe: 'Tus palabras en el check-in · 29 oct 2026',
+
+tiles: [['3','comidas al día'],['0','snacks obligatorios'],['2','tipos de día'],['128 g','proteína']],
+
+mensaje: [
+ 'Melissa, la Fase 2 funcionó: bajaste de <b>85 a 81,5 cm de cintura</b> y de <b>160,4 a 157 libras</b>, la ropa te queda más suelta, subiste cargas de forma constante y tus laboratorios salieron <b>impecables</b> — azúcar, tiroides, colesterol e hígado, todos en rango. Eso es exactamente lo que buscábamos.',
+ 'En esta última fase te escuché: <b>tres comidas, sin snack</b>, vegetales solo en almuerzo y cena, plátano maduro y verde, y más carbohidrato. Tus antojos del 9/10 y la ansiedad no son falta de disciplina: son tu cuerpo pidiendo comida en la semana del periodo. Por eso <b>esta fase sube el carbohidrato, no lo baja</b>.'
+],
+mensajeFirma: 'Sara',
+
+arranque: [
+ ['Qué cambia','Tres comidas grandes, más carbo',['Se va el snack de la tarde que te costaba. El carbohidrato sube — plátano, arepa, arroz, papa — y la proteína baja un poco, porque me dijiste que sentías que era mucha. Ahora comes en 3 tomas completas que de verdad llenan.']],
+ ['Qué NO cambia','Lo que ya te funciona',['Tus desayunos favoritos: huevos, arepa fina o tortilla de plátano, cottage y yogur griego, sin vegetales. La creatina. Y la estructura de día que ya dominaste: sábado compro, domingo preparo.']],
+ ['La única regla','Si todo falla, esta no',['Proteína en cada una de las tres comidas y carbohidrato en la cena, todos los días. Eso solo ya sostiene el músculo, el sueño y los antojos.']]
+],
+notaArranque: 'Si un día llegas tarde del fútbol y no alcanzas a cenar completo: un huevo, plátano o arepa, y algo de proteína (yogur griego, cottage o whey). Nunca te saltes la cena entera — saltarla es lo que dispara el antojo del día siguiente.',
+
+dia: [
+ ['6:30','Luz natural al despertar','10–15 min afuera, sin gafas',1],
+ ['7:00','Desayuno','≥35 g de proteína, sin vegetales',1],
+ ['1:00','Almuerzo','Tu comida más grande, con verdura',1],
+ ['4:30','Creatina','5 g, con agua o en el yogur',1],
+ ['5:00','Entrenamiento','Fuerza — lo define tu entrenador',0],
+ ['7:30','Cena','Proteína + carbohidrato + verdura',1],
+ ['9:15','Magnesio','400 mg, para el sueño',0],
+ ['10:00','Dormir','Teléfono fuera del cuarto',1]
+],
+notaDia: 'En temporada de fútbol, cuando llegues sobre las 10 pm: deja la cena lista desde la mañana (ver las recetas de domingo) y come apenas llegues. Comer tarde no engorda; saltarse la comida sí desordena el hambre del día siguiente.',
+
+suplementos: [
+ ['Diario','Creatina monohidrato','5 g','sigue','Con agua o en el yogur, a cualquier hora'],
+ ['9:15 pm','Magnesio bisglicinato','400 mg','nuevo','Sueño, antojos premenstruales y evacuación'],
+ ['1:00 pm','Vitamina D3 + K2','2.000 UI','opc','Con el almuerzo (tiene grasa). Si el presupuesto alcanza'],
+ ['—','Lo demás','—','para','Sin omega-3 ni otros: ya los cubre la comida']
+],
+suplFolds: [
+ ['Por qué solo creatina y magnesio','Presupuesto: solo lo esencial',['Pediste priorizar. La creatina es lo más rentable para proteger y construir músculo — y es lo único que tomaste constante en la Fase 2. El magnesio entra nuevo porque ayuda a la vez con el sueño, los antojos del periodo y el estreñimiento tipo 2 que reportaste. <b>Nada más es imprescindible.</b>']],
+ ['Qué sale de la Fase 2','Menos frascos',['Salen omega-3, vitamina B6, glicina y los demás. Tus laboratorios de colesterol y triglicéridos están perfectos, así que el omega-3 lo cubre la comida. Menos frascos = más fácil de sostener, que es lo que de verdad importa.']],
+ ['La vitamina D es opcional','Si el presupuesto alcanza',['<span class="flag chk">verificar</span>No tenemos tu nivel de 25-OH vitamina D todavía. Si puedes, pídela junto con la ferritina (ver §Medir). Mientras tanto, 2.000 UI es una dosis segura y barata — pero si hay que recortar, recorta aquí antes que la creatina.']]
+],
+
+dias: [
+ ['Día 1','Lun 3 nov · Moderado','Entreno de fuerza · día base',1760,121,[
+  ['7:00 am','Desayuno criollo de huevos y arepa',583,37,[
+    'Huevo entero 150 g (3 huevos)','Queso cottage sin lactosa 130 g (½ taza larga)',
+    'Arepa fina de maíz 75 g (1 unidad delgada)','Aceite de oliva 3 g (½ cdta)',
+    'Papaya 150 g (1 taza)'],''],
+  ['1:00 pm','Pollo con arroz, plátano mixto y ensalada',698,46,[
+    'Pechuga de pollo 120 g (1 palma)','Arroz blanco o integral 120 g (¾ taza)',
+    'Plátano maduro 75 g (⅓ taza)','Plátano verde 75 g (⅓ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 8 g (1½ cdta)','Aguacate 30 g (⅛)'],''],
+  ['7:30 pm','Carne molida con papa y verduras',479,38,[
+    'Carne molida magra 93% 115 g (1 palma)','Papa 200 g (1⅓ taza)',
+    'Verduras salteadas 160 g (2 tazas)','Aceite de oliva 6 g (1 cdta)','Tomate 90 g (½ taza)'],'']]],
+
+ ['Día 2','Mar 4 nov · Moderado','Entreno de fuerza · juego de fútbol pm',1730,120,[
+  ['7:00 am','Tortillas de plátano verde con huevo y cottage',560,37,[
+    'Huevo entero 150 g (3 huevos)','Plátano verde 90 g (tortillas, ½ taza)',
+    'Queso cottage sin lactosa 120 g (½ taza)','Aceite de oliva 3 g (½ cdta)','Piña 140 g (¾ taza)'],''],
+  ['1:00 pm','Pavo con arroz, plátano mixto y ensalada',690,45,[
+    'Pavo molido magro 93% 120 g (1 palma)','Arroz 120 g (¾ taza)',
+    'Plátano maduro 75 g (⅓ taza)','Plátano verde 75 g (⅓ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 8 g (1½ cdta)','Aguacate 30 g (⅛)'],''],
+  ['7:30 pm','Pollo con papa y verduras',480,38,[
+    'Pechuga de pollo 120 g (1 palma)','Papa 200 g (1⅓ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 7 g (1½ cdta)','Tomate 90 g (½ taza)'],'']]],
+
+ ['Día 3','Mié 5 nov · ALTO','Fuerza intensa de pierna · tu meta de la fase',2000,131,[
+  ['7:00 am','Huevos con arepa, yogur griego y banano',609,41,[
+    'Huevo entero 150 g (3 huevos)','Yogur griego 0% sin lactosa 170 g (¾ taza)',
+    'Arepa fina de maíz 85 g (1 unidad)','Aceite de oliva 3 g (½ cdta)','Banano 110 g (1 mediano)'],''],
+  ['1:00 pm','Pollo con arroz, plátano mixto y ensalada',809,49,[
+    'Pechuga de pollo 125 g (1 palma gen.)','Arroz 150 g (1 taza)',
+    'Plátano maduro 85 g (½ taza)','Plátano verde 85 g (½ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 10 g (2 cdta)','Aguacate 40 g (¼)'],''],
+  ['7:30 pm','Cerdo con papa, plátano y verduras',590,41,[
+    'Lomo de cerdo 115 g (1 palma)','Papa 190 g (1¼ taza)','Plátano maduro 60 g (¼ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 7 g (1½ cdta)','Tomate 90 g (½ taza)','Aguacate 20 g (⅛)'],'']]],
+
+ ['Día 4','Jue 6 nov · Moderado','Entreno de fuerza · día base',1767,119,[
+  ['7:00 am','Huevos con pan de masa madre y cottage',560,37,[
+    'Huevo entero 150 g (3 huevos)','Pan de masa madre 50 g (1 rebanada)',
+    'Queso cottage sin lactosa 130 g (½ taza larga)','Aceite de oliva 3 g (½ cdta)','Fresa 150 g (1 taza)'],''],
+  ['1:00 pm','Res con arroz, plátano mixto y ensalada',690,43,[
+    'Lomo de res (top sirloin) 110 g (1 palma peq.)','Arroz 120 g (¾ taza)',
+    'Plátano maduro 75 g (⅓ taza)','Plátano verde 75 g (⅓ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 8 g (1½ cdta)','Aguacate 30 g (⅛)'],''],
+  ['7:30 pm','Pavo con papa y verduras',490,38,[
+    'Pavo molido magro 93% 120 g (1 palma)','Papa 200 g (1⅓ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 7 g (1½ cdta)','Tomate 90 g (½ taza)'],'']]],
+
+ ['Día 5','Vie 7 nov · Moderado','Viaje a Tampa (torneo) · lleva lo del desayuno',1725,122,[
+  ['7:00 am','Huevos con arepa fina y yogur griego',555,38,[
+    'Huevo entero 150 g (3 huevos)','Yogur griego 0% sin lactosa 150 g (⅔ taza)',
+    'Arepa fina de maíz 75 g (1 unidad)','Aceite de oliva 3 g (½ cdta)','Mandarina 130 g (2 pequeñas)'],''],
+  ['1:00 pm','Pollo con arroz, plátano mixto y ensalada',698,46,[
+    'Pechuga de pollo 120 g (1 palma)','Arroz 120 g (¾ taza)',
+    'Plátano maduro 75 g (⅓ taza)','Plátano verde 75 g (⅓ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 8 g (1½ cdta)','Aguacate 30 g (⅛)'],''],
+  ['7:30 pm','Carne molida con papa y verduras',472,38,[
+    'Carne molida magra 93% 115 g (1 palma)','Papa 200 g (1⅓ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 6 g (1 cdta)','Tomate 90 g (½ taza)'],'']]],
+
+ ['Día 6','Sáb 8 nov · ALTO','Torneo en Tampa · alto gasto todo el día',2000,131,[
+  ['7:00 am','Huevos con arepa, yogur y banano',609,41,[
+    'Huevo entero 150 g (3 huevos)','Yogur griego 0% sin lactosa 170 g (¾ taza)',
+    'Arepa fina de maíz 85 g (1 unidad)','Aceite de oliva 3 g (½ cdta)','Banano 110 g (1 mediano)'],''],
+  ['1:00 pm','Pollo con arroz, plátano mixto y ensalada',809,49,[
+    'Pechuga de pollo 125 g (1 palma gen.)','Arroz 150 g (1 taza)',
+    'Plátano maduro 85 g (½ taza)','Plátano verde 85 g (½ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 10 g (2 cdta)','Aguacate 40 g (¼)'],''],
+  ['7:30 pm','Cerdo con papa, plátano y verduras',590,41,[
+    'Lomo de cerdo 115 g (1 palma)','Papa 190 g (1¼ taza)','Plátano maduro 60 g (¼ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 7 g (1½ cdta)','Tomate 90 g (½ taza)','Aguacate 20 g (⅛)'],'']]],
+
+ ['Día 7','Dom 9 nov · ALTO','Recarga + día de preparar la semana',1917,128,[
+  ['7:00 am','Huevos con tortillas de plátano verde y yogur',640,42,[
+    'Huevo entero 150 g (3 huevos)','Plátano verde 90 g (tortillas, ½ taza)',
+    'Yogur griego 0% sin lactosa 170 g (¾ taza)','Aceite de oliva 3 g (½ cdta)','Mango 120 g (¾ taza)'],''],
+  ['1:00 pm','Pavo con arroz, plátano mixto y ensalada',808,49,[
+    'Pavo molido magro 93% 125 g (1 palma gen.)','Arroz 150 g (1 taza)',
+    'Plátano maduro 85 g (½ taza)','Plátano verde 85 g (½ taza)',
+    'Verduras libres 160 g (2 tazas)','Aceite de oliva 10 g (2 cdta)','Aguacate 40 g (¼)'],''],
+  ['7:30 pm','Pollo con papa, plátano y verduras',469,37,[
+    'Pechuga de pollo 120 g (1 palma)','Papa 190 g (1¼ taza)','Plátano maduro 60 g (¼ taza)',
+    'Verduras 160 g (2 tazas)','Aceite de oliva 7 g (1½ cdta)','Tomate 90 g (½ taza)','Aguacate 20 g (⅛)'],'']]]
+],
+notaDias: 'El gramaje es <b>en cocido</b> (lo que sirves en el plato), y la medida casera manda si no tienes gramera. El <b>plátano siempre va mitad maduro, mitad verde</b> — el verde alimenta tu flora y el maduro te da el dulce que buscas. Días ALTOS (miércoles, sábado, domingo): comes más carbohidrato porque entrenas fuerte o gastas más. Son los días del torneo y de la recarga.',
+
+grupos: [
+ ['Proteína',3,'≈25–30 g de proteína',0,[
+   ['Pollo (pechuga)','1 palma · 120 g'],['Pavo molido 93%','1 palma · 120 g'],
+   ['Carne molida 93%','1 palma · 115 g'],['Lomo de res (sirloin)','1 palma peq. · 110 g'],
+   ['Lomo de cerdo','1 palma · 115 g'],['Huevo entero','3 unidades · 150 g'],
+   ['Whey isolate','1½ scoop · 35 g']]],
+ ['Carbohidrato','2½–3','≈30 g de carbohidrato',0,[
+   ['Arroz blanco o integral','¾ taza · 120 g'],['Papa','1⅓ taza · 200 g'],
+   ['Plátano maduro + verde','⅓+⅓ taza · 75+75 g'],['Arepa fina de maíz','1 unidad · 75 g'],
+   ['Pan de masa madre','1 rebanada · 50 g'],['Batata','1 taza · 200 g'],
+   ['Quinua','¾ taza · 140 g']]],
+ ['Fruta',1,'≈15 g de carbohidrato',0,[
+   ['Papaya','1 taza · 150 g'],['Piña','¾ taza · 140 g'],['Banano','1 mediano · 110 g'],
+   ['Mango','¾ taza · 120 g'],['Fresa','1 taza · 150 g'],['Mandarina','2 pequeñas · 130 g'],
+   ['Naranja','1 mediana · 140 g'],['Uva','¾ taza · 110 g'],['Guayaba','1 unidad · 120 g']]],
+ ['Grasa',2,'≈5 g de grasa',0,[
+   ['Aceite de oliva','1 cdta · 5 g'],['Aguacate','⅛ unidad · 35 g'],
+   ['Almendras','10 unidades · 12 g'],['Nuez','4 mitades · 8 g'],
+   ['Semilla de calabaza','1 cda · 10 g'],['Mantequilla de maní','1 cdta · 6 g']]],
+ ['Lácteo',1,'≈12 g de proteína',0,[
+   ['Yogur griego 0–2% sin lactosa','¾ taza · 170 g'],['Cottage sin lactosa','½ taza · 130 g'],
+   ['Queso parmesano','25 g'],['Queso feta','35 g']]],
+ ['Verdura','2+','libres · solo almuerzo y cena',1,[
+   ['Lechuga, rúgula, kale','2 tazas'],['Zucchini, judías verdes','1 taza'],
+   ['Tomate, pepino, pimentón','1 taza'],['Zanahoria, calabaza','½ taza']]]
+],
+reglaCambio: '<b>La única regla del cambio:</b> cambia <b>dentro</b> del mismo grupo, nunca <b>entre</b> grupos. Un plátano se cambia por arroz o papa (ambos del grupo Carbohidrato), nunca por una fruta.',
+estirar: ['Cómo estirar la semana a 33 días','Tres trucos, sin cuentas',
+  ['<b>Rota la proteína.</b> El mismo almuerzo de arroz con plátano sabe distinto con pollo, pavo, res o cerdo. Es otro plato sin recalcular nada.',
+   '<b>Rota el condimento.</b> Cúrcuma y comino un día, achiote y cebolla roja otro, limón y cilantro otro. Costo cero, sabor nuevo.',
+   '<b>Rota la fruta del desayuno.</b> Tienes 9 frutas en la lista. Una distinta cada día y no se siente repetido.']],
+
+mercado: [
+ ['Proteínas',[['Huevos','2 cartones (24 u)'],['Pechuga de pollo','900 g'],
+   ['Pavo molido 93%','500 g'],['Carne molida 93%','300 g'],['Lomo de cerdo','300 g'],
+   ['Lomo de res (sirloin)','150 g']]],
+ ['Carbohidratos',[['Plátano maduro','5 unidades'],['Plátano verde','5 unidades'],
+   ['Papa','1,5 kg'],['Arroz','1 kg'],['Arepa fina de maíz','1 paquete'],
+   ['Pan de masa madre','½ barra']]],
+ ['Frutas',[['Papaya','1 pequeña'],['Piña','1 unidad'],['Banano','4 unidades'],
+   ['Mango','1 unidad'],['Fresa','1 caja'],['Mandarina','4 unidades']]],
+ ['Verduras',[['Lechuga / rúgula / kale','2 bolsas'],['Zucchini o judías verdes','500 g'],
+   ['Tomate','700 g'],['Pepino y pimentón','al gusto'],['Zanahoria','al gusto'],['Aguacate','3 unidades']]],
+ ['Lácteos',[['Yogur griego 0% sin lactosa','1 kg'],['Cottage sin lactosa','2 tarrinas'],['Parmesano o feta','1 porción pequeña']]],
+ ['Despensa',[['Aceite de oliva','1 botella'],['Creatina monohidrato','1 tarro'],['Magnesio bisglicinato','1 frasco']]]
+],
+mercadoFolds: [
+ ['El día de cocinar','Domingo, lo que ya dominas',['Cocina de una vez: arroz y papa para 3 días (guárdalos en la nevera), pollo y pavo horneados en bandeja, y deja listas las tortillas de plátano verde. Congela 2 cenas (pollo y cerdo) para los días de fútbol que llegues tarde. Con eso la semana ya está resuelta.']],
+ ['Para los días de torneo','7–8 nov en Tampa',['Lleva en una nevera pequeña: huevos cocidos, arepas finas, yogur griego y fruta para los desayunos. El almuerzo y la cena los resuelves con pollo o carne a la plancha + arroz o papa + ensalada, que encuentras en cualquier lugar. No te saltes comidas en el viaje.']]
+],
+
+educacion: [
+ ['Por qué subimos el carbohidrato','No es un premio, es la estrategia',
+  ['<b>Me dijiste que te sientes con energía y bien cuando comes más carbohidrato. Te creo, y la fisiología te da la razón.</b>','Bajar el carbohidrato por tu cuenta en la Fase 2 fue justo lo que disparó los antojos del 9/10. El cuerpo que siente poca energía pide comida a gritos.','En esta fase el carbohidrato sube a propósito: alimenta el músculo, baja el cortisol en la noche y apaga el antojo antes de que aparezca.']],
+ ['Los días del periodo, resueltos','Antes y después de la regla',
+  ['<b>El antojo de salado, grasiento y dulce en esos días es hormonal, no falta de voluntad.</b>','Por eso los días cerca del periodo son días ALTOS: ya tienen más carbohidrato y más comida incluidos.','Y tienes permiso de usar el plátano maduro, el banano o el mango para calmar el pico de dulce. Es parte del plan, no una trampa.']],
+ ['El músculo es lo que afina la pierna','Tu meta de esta fase',
+  ['<b>"Mejorar las piernas, que están flácidas" se logra con fuerza y proteína, no con dieta sola.</b>','La grasa baja con el déficit suave; la firmeza viene del músculo que construyes entrenando pierna con cargas que suben cada semana.','Por eso el miércoles es día de pierna y día ALTO: entrenas fuerte y comes para construir.']],
+ ['La proteína bajó un poco, a propósito','Me dijiste que era mucha',
+  ['<b>Pasamos de 140 g a ~128 g al día.</b>','Sigue siendo suficiente para proteger el músculo (1,8 g por kilo), pero repartida en 3 comidas de ~40 g en vez de 4, para que no la dejes sin terminar.','Si un día sientes que sobra, reduce el tamaño de la porción animal, no te saltes la toma.']],
+ ['Tres comidas, cero snack','Como lo pediste',
+  ['<b>Quitamos la colación de la tarde que te costaba hacer.</b>','Las tres comidas son más grandes y completas, así llegas a la siguiente sin hambre.','Si un día de verdad te da hambre a media tarde, usa la herramienta de abajo antes de comer: casi siempre es sed o aburrimiento, no hambre.']],
+ ['La báscula no es el juez','Mira la cintura y la ropa',
+  ['<b>En la Fase 2 bajaste 3,5 cm de cintura y la ropa te quedó más suelta, aunque la báscula se movió poco.</b>','Eso es recomposición: pierdes grasa y ganas músculo a la vez, y el músculo pesa. La cinta métrica y el espejo te dicen la verdad antes que la balanza.','Mídete la cintura cada 15 días y tómate fotos. Ahí vas a ver el cambio.']]
+],
+azucar: [['1 plátano maduro (½ taza)',16],['1 banano mediano',14],['1 gaseosa de 350 mL',39,1]],
+notaEduca: 'La verdad incómoda con cariño: en 34 días no vas a perder los 17 kilos que soñabas al principio — eso toma 8 o 9 meses de este mismo camino. Pero sí vas a seguir bajando tallas, afinando la pierna y sintiéndote más fuerte. El cambio ya empezó y se ve en la ropa.',
+
+extraTitulo: 'Días alto y moderado',
+extraIntro: 'Tu ciclado de carbohidratos, simple. Dos tipos de día, nada más que recordar.',
+semaforo: [
+ ['Pollo','v'],['Pavo molido','v'],['Carne molida','v'],['Res sirloin','v'],['Cerdo lomo','v'],
+ ['Huevo entero','v'],['Yogur griego','v'],['Cottage sin lactosa','v'],['Whey isolate','v'],
+ ['Arroz','v'],['Papa','v'],['Arepa fina','v'],['Pan masa madre','v'],['Batata','v'],['Quinua','v'],
+ ['Plátano maduro','v'],['Plátano verde','v'],['Banano','v'],
+ ['Papaya','v'],['Piña','v'],['Mango','v'],['Fresa','v'],['Mandarina','v'],['Naranja','v'],['Uva','v'],['Guayaba','v'],
+ ['Aguacate','a','⅛'],['Aceite de oliva','a','1 cdta'],['Almendras','a','10 u'],['Semilla calabaza','a','1 cda'],
+ ['Pescado y mariscos','r'],['Gaseosa / jugo','r'],['Ultraprocesados','r'],['Alcohol','r'],['Edulcorante artificial','r']],
+etiquetas: {v:'Libre', a:'Por porción', r:'Fuera'},
+extraFolds: [
+ ['Qué comes en un día ALTO','Miércoles, sábado, domingo',['Son tus días de entrenar fuerte o gastar más (torneo). <b>Comes más carbohidrato:</b> arroz hasta 1 taza, plátano hasta ½+½ taza, más fruta. La proteína es la misma. Son también los días del periodo, cuando el cuerpo pide más.']],
+ ['Qué comes en un día MODERADO','Lunes, martes, jueves, viernes',['Días de entreno normal o descanso. <b>Un poco menos de carbohidrato:</b> arroz ¾ taza, plátano ⅓+⅓ taza. Sigues con tus 3 comidas completas y tu carbohidrato en la cena — eso no se quita nunca.']],
+ ['El plátano, mitad y mitad','Siempre los dos juntos',['El plátano verde alimenta tu flora intestinal (ayuda con la hinchazón y el estreñimiento tipo 2) y el maduro te da el dulce. Por eso van siempre mitad y mitad: lo mejor de los dos. Cocínalos y, si puedes, déjalos enfriar en la nevera — así alimentan aún mejor a tus bacterias.']]],
+notaExtra: 'No hay nada prohibido salvo lo que de verdad te estorba: pescado (que no disfrutas), gaseosa y jugos (apagan la hormona de la saciedad), y el alcohol. Todo lo demás es tuyo, en su porción.',
+
+preguntas: [
+ ['¿De verdad no hago snack en la tarde?','<b>Correcto, no.</b> Lo quitaste tú y tiene sentido: sentías el almuerzo todavía. Tus 3 comidas son más grandes ahora. Si un día real tienes hambre, usa la herramienta de arriba primero.'],
+ ['¿Puedo cambiar arepa por pan o por arroz?','<b>Sí.</b> Todos son del grupo Carbohidrato y valen lo mismo. Cambia libre entre ellos. Lo único: en el desayuno, sin vegetales, como pediste.'],
+ ['En los días del periodo, ¿qué hago con los antojos?','<b>Esos días ya son ALTOS</b>, con más comida. Usa el plátano maduro, el banano o el mango para el dulce. Y si un día comes algo fuera del plan, vuelves en la siguiente comida. Una vez no rompe nada.'],
+ ['Llego tarde del fútbol, ¿ceno igual?','<b>Sí, siempre cena.</b> Déjala lista en la mañana. Comer a las 10 pm no engorda; saltarse la cena sí dispara el antojo del otro día. Es la regla que no se rompe.'],
+ ['¿Por qué bajó la proteína?','Me dijiste que sentías que era mucha. Bajamos de 140 a ~128 g y la repartimos en 3 tomas más cómodas. Sigue siendo suficiente para tu músculo.']
+],
+
+alertas: 'el antojo se vuelve incontrolable varios días seguidos · la báscula sube más de 1,5 kg fuera de la semana del periodo · se devuelve la hinchazón y dura más de 3 días · el sueño empeora · pierdes fuerza en el entrenamiento',
+
+firma: 'ND. MsC. Sara C. Marmolejo',
+firmaSub: 'Nutricionista Dietista, énfasis clínico'
+};
+
+/* ══ BLOQUE C · MOTOR — NO HACE FALTA TOCARLO ═══════════════════════ */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const CHECK='<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.2 3.2L12 4.5"/></svg>';
+const F=FASES[A.fase], KEY='t100-'+A.fase+'-'+A.nombre.replace(/\W/g,'');
+const esc=s=>s;
+document.documentElement.setAttribute('data-fase',A.fase);
+
+const SECS=[];
+function sec(id,nombre,titulo,intro,html){
+  SECS.push([id,nombre]);
+  return `<section id="${id}"><div class="sec-h"><span class="n">${String(SECS.length).padStart(2,'0')}</span>
+    <h2>${titulo}</h2></div>${intro?`<p class="sec-p">${intro}</p>`:''}${html}</section>`;
+}
+const fold=(t,s,ps,ic='')=>`<div class="fold"><button aria-expanded="false">
+  <span class="ic${ic.length>3?' h mono':''}">${ic||'·'}</span>
+  <span class="tt">${t}${s?`<small>${s}</small>`:''}</span><span class="ch">▾</span></button>
+  <div class="body" hidden>${ps.map(p=>p==='@azucar'?'<div class="sugar"></div>':`<p>${p}</p>`).join('')}</div></div>`;
+const nota=(h,k='')=>`<div class="note ${k}">${h}</div>`;
+
+/* ---------- encabezado ---------- */
+document.body.insertAdjacentHTML('afterbegin',`
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Transformación 100 Días · Fase ${A.fase} de 3 · ${F.corto}</p>
+  <h1>${F.titulo}</h1>
+  <p class="lede"><b>${A.nombre}</b> · ${F.dias.toLowerCase()} · ${A.inicio} al ${A.fin}.
+    No tienes que leer todo hoy: toca lo que necesites, cuando lo necesites.</p>
+  <div class="cita"><q>${A.cita}</q><cite>${A.citaDe}</cite></div>
+  <div class="tiles">${A.tiles.map(t=>`<div class="tile"><b>${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+</div></header>
+<nav class="nav" aria-label="Secciones"><div class="scroll" id="nav"></div></nav>
+<main class="wrap" id="main"></main>
+<footer><div class="wrap"><b>${A.firma}</b>${A.firmaSub}<br>
+  Fase ${A.fase} · ${F.nom} · ${A.inicio} al ${A.fin}</div></footer>`);
+
+/* ---------- secciones ---------- */
+$('#main').innerHTML=
+ sec('empieza','Empieza aquí','Empieza aquí','',
+  `<div class="carta">${A.mensaje.map(p=>`<p>${p}</p>`).join('')}
+   <div class="firma-carta"><span class="rub">${A.mensajeFirma}</span>
+     <span>${A.firma}<br>${A.firmaSub}</span></div></div>
+   <div class="fase-card"><div class="ttl">Fase ${A.fase} de 3 · ${F.nom}</div>
+     <p>${F.obj}</p>
+     <p style="margin-bottom:0"><b>Por qué ahora:</b> ${F.porque}</p></div>
+   <div class="ruta">${[1,2,3].map(n=>`<div class="${n===A.fase?'now':n<A.fase?'done':''}">
+     <b>Fase ${n}</b>${SEC[n-1]}</div>`).join('')}</div>`
+  +A.arranque.map((c,i)=>fold(c[0],c[1],c[2],['↑','=','!'][i])).join('')
+  +fold('Qué vas a notar al terminar esta fase','Resultado esperado',
+     ['· '+F.espera.join('<br>· ')],'★')
+  +nota(A.notaArranque))
++sec('dia','Tu día','Tu día','Tu horario completo. Marca lo que cumplas — se guarda en este teléfono.',
+  `<div class="tl" id="tl"></div>`+nota(A.notaDia)
+  +`<h3 class="sub-h">Tus suplementos</h3><div class="tabla">`
+  +A.suplementos.map(x=>`<div class="tr"><span class="h mono">${x[0]}</span>
+     <span class="nm3"><b>${x[1]}</b><small>${x[4]}</small></span>
+     <span class="ds mono">${x[2]}</span>
+     <span class="st ${x[3]}">${{sigue:'Sigue',nuevo:'Nuevo',para:'Fuera',opc:'Opcional'}[x[3]]}</span></div>`).join('')
+  +`</div>`+A.suplFolds.map((f,i)=>fold(f[0],f[1],f[2],['℞','⇄','⌖'][i])).join(''))
++sec('comidas','Qué como','Qué como','Un día a la vez. El gramaje es <b>en cocido</b>, y la medida casera manda.',
+  `<div class="days" id="days" role="tablist"></div><div id="meals"></div>`+nota(A.notaDias))
++sec('cambiar','Cambiar','Cambiar','Esto hace que 7 días te duren 33. <b>Toca un alimento</b> y te digo por cuáles cambiarlo.',
+  `<div class="bud" id="bud"></div>`+nota(A.reglaCambio,'alert')+
+  `<div class="filters" id="gfilters"></div><div id="swap"></div>`+fold(...A.estirar,'∞'))
++sec('mercado','Mercado','Mercado','Lo de la semana. Toca para ir tachando.',
+  `<div class="mk-bar"><span id="mk-count"></span><button id="mk-reset">Destachar todo</button></div>
+   <div id="mkt"></div>`+A.mercadoFolds.map((f,i)=>fold(...f,['◷','⌖'][i])).join(''))
++sec('aprender','Aprender','Aprender','Seis ideas, una por tarjeta. Y una herramienta para usar cuando dudes.',
+  `<div class="tool" id="tool"></div><div style="height:13px"></div>`
+  +A.educacion.map((e,i)=>fold(e[0],e[1],e[2],String(i+1))).join('')+nota(A.notaEduca,'ok'))
++sec('extra',A.extraTitulo,A.extraTitulo,A.extraIntro,
+  `<input class="search" id="q" type="search" placeholder="Busca un alimento…" aria-label="Buscar alimento">
+   <div class="filters" id="filters"></div><div class="foods" id="foods"></div>`
+  +A.extraFolds.map(f=>fold(...f,'◆')).join('')+nota(A.notaExtra))
++sec('dudas','Dudas','Dudas','',
+  A.preguntas.map(q=>fold(q[0],'',[q[1]],'?')).join('')
+  +`<div class="cierre">${nota('<b>Escríbeme el mismo día si…</b> '+A.alertas
+    +'. <b>Ninguna significa que lo estés haciendo mal:</b> significan que hay que ajustar, y ajustar casi siempre es comer un poco más.','alert')}</div>`);
+
+$('#nav').innerHTML=SECS.map(([id,n],i)=>
+  `<a href="#${id}"${i===0?' class="on"':''}>${n}</a>`).join('');
+
+/* ---------- plegables ---------- */
+function bindFolds(root=document){
+  $$('.fold>button',root).forEach(b=>{
+    if(b.dataset.b) return; b.dataset.b=1;
+    b.addEventListener('click',()=>{
+      const f=b.parentElement, body=$('.body',f), open=f.classList.toggle('open');
+      b.setAttribute('aria-expanded',open); body.hidden=!open;
+      if(open && $('.sugar',f)) drawSugar($('.sugar',f));
+    });
+  });
+}
+bindFolds();
+
+/* ---------- timeline ---------- */
+const hoy=()=>new Date().toISOString().slice(0,10);
+let done=store.get(KEY+'-dia-'+hoy(),[]);
+const claves=A.dia.map((d,i)=>d[3]?i:-1).filter(i=>i>=0);
+function drawTL(){
+  $('#tl').innerHTML=A.dia.map((d,i)=>`<div class="tl-row${d[3]?' key':''}">
+    <div class="t mono">${d[0]}</div><div class="c"><b>${d[1]}</b><span>${d[2]}</span></div>
+    <button class="chk" aria-pressed="${done.includes(i)}" aria-label="Marcar ${d[1]}">${CHECK}</button></div>`).join('')
+   +`<div class="tl-foot"><span id="tl-count"></span><button id="tl-reset">Empezar de nuevo</button></div>`;
+  $$('#tl .chk').forEach((b,i)=>b.addEventListener('click',()=>{
+    done=done.includes(i)?done.filter(x=>x!==i):[...done,i];
+    b.setAttribute('aria-pressed',done.includes(i));
+    store.set(KEY+'-dia-'+hoy(),done); cuenta();
+  }));
+  $('#tl-reset').addEventListener('click',()=>{done=[];store.set(KEY+'-dia-'+hoy(),done);drawTL()});
+  cuenta();
+}
+function cuenta(){
+  const h=claves.filter(i=>done.includes(i)).length, t=claves.length;
+  $('#tl-count').innerHTML = h===t ? '<strong>Todo cumplido.</strong> Eso es el día.'
+    : `<strong>${h} de ${t}</strong> — lo único que cuenta de verdad.`;
+}
+drawTL();
+
+/* ---------- los 7 días ---------- */
+let dSel=0;
+function drawDays(){
+  $('#days').innerHTML=A.dias.map((d,i)=>{const [dw,...r]=d[0].split(' ');
+    return `<button class="day-b${i===dSel?' on':''}" role="tab" aria-selected="${i===dSel}">
+      <b>${dw}</b><span>${r.join(' ')}</span></button>`}).join('');
+  $$('.day-b').forEach((b,i)=>b.addEventListener('click',()=>{dSel=i;drawDays();drawMeals()}));
+}
+function drawMeals(){
+  const d=A.dias[dSel];
+  $('#meals').innerHTML=d[5].map(t=>`<div class="meal">
+    <div class="meal-h"><span class="hh">${t[0]}</span><span class="nn">${t[1]}</span>
+      <span class="kk">${t[2]} kcal<br>${t[3]} g proteína</span></div>
+    <ul>${t[4].map(it=>{const m=it.match(/^(.*?)\s(\d+\s*g\s*\(.*\))$/);
+      return `<li><span>${m?m[1]:it} ${m?`<em>${m[2]}</em>`:''}</span></li>`}).join('')}</ul>
+    ${t[5]?`<div class="alc"><b>Ya contado en tu plan:</b> ${t[5]}. No hay que compensarlo.</div>`:''}
+  </div>`).join('')
+  +nota(`<b>${d[2]}</b> · Total del día: ${d[3]} kcal · ${d[4]} g de proteína.`);
+}
+drawDays(); drawMeals();
+
+/* ---------- intercambios ---------- */
+let gSel=0, ref=null;
+$('#bud').innerHTML=A.grupos.map(g=>`<div><b>${g[1]}</b><span>${g[0]}</span></div>`).join('');
+$('#gfilters').innerHTML=A.grupos.map((g,i)=>
+  `<button class="fchip${i===0?' on':''}" data-g="${i}">${g[0]}</button>`).join('');
+$$('#gfilters .fchip').forEach(b=>b.addEventListener('click',()=>{
+  gSel=+b.dataset.g; ref=null;
+  $$('#gfilters .fchip').forEach(x=>x.classList.toggle('on',x===b)); drawSwap();
+}));
+function drawSwap(){
+  const g=A.grupos[gSel], libre=g[3];
+  const head = libre
+    ? `Estas <b>no se cuentan</b>. Son las que llenan el plato en el almuerzo y la cena. Si un día tienes más hambre de la
+       esperada, este es el grupo del que puedes repetir sin pensarlo.`
+    : ref!==null
+      ? `En vez de <b>${g[4][ref][0]}</b> (${g[4][ref][1]}), puedes usar cualquiera de las otras.
+         Toca de nuevo para quitar la referencia.`
+      : `<b>${g[1]} porciones al día.</b> Cada una de estas vale lo mismo: ${g[2]}. Toca una para
+         compararla con el resto.`;
+  $('#swap').innerHTML=`<div class="sw-head">${head}</div><div class="sw-list">`+
+    g[4].map((it,i)=>`<button class="sw${ref===i?' on':''}"${libre?' disabled style="cursor:default"':''}>
+      <span class="nm2">${it[0]}</span><span class="pr">${it[1]}</span></button>`).join('')+`</div>`;
+  if(!libre) $$('#swap .sw').forEach((b,i)=>b.addEventListener('click',()=>{ref=ref===i?null:i;drawSwap()}));
+}
+drawSwap();
+
+/* ---------- mercado ---------- */
+let got=store.get(KEY+'-mkt',[]);
+const TOT=A.mercado.reduce((a,g)=>a+g[1].length,0);
+function drawMkt(){
+  $('#mkt').innerHTML=A.mercado.map(([t,items],gi)=>`<div class="mk-grp"><h3>${t}</h3><div class="mk-list">`+
+    items.map((it,i)=>{const id=gi+'-'+i;
+      return `<button class="mk${got.includes(id)?' got':''}" data-id="${id}" aria-pressed="${got.includes(id)}">
+        <span class="chk" aria-hidden="true">${CHECK}</span>
+        <span class="nm2">${it[0]}</span><span class="qt">${it[1]}</span></button>`}).join('')+
+    `</div></div>`).join('');
+  $$('#mkt .mk').forEach(b=>{
+    $('.chk',b).setAttribute('aria-pressed', b.classList.contains('got'));
+    b.addEventListener('click',()=>{const id=b.dataset.id;
+      got=got.includes(id)?got.filter(x=>x!==id):[...got,id];
+      store.set(KEY+'-mkt',got); drawMkt();});
+  });
+  $('#mk-count').innerHTML = got.length===TOT ? '<strong>Mercado completo.</strong>'
+    : `<strong>${got.length} de ${TOT}</strong> en el carrito`;
+}
+$('#mk-reset').addEventListener('click',()=>{got=[];store.set(KEY+'-mkt',got);drawMkt()});
+drawMkt();
+
+/* ---------- ¿hambre real? ---------- */
+const PREG=[
+ ['¿Te comerías un plato de pollo con arroz ahora mismo?','La pregunta no es si te provoca. Es si te lo comerías.',['Sí, me lo como',0],['No. Yo quiero otra cosa',1]],
+ ['¿Dónde lo sientes?','Cierra los ojos un segundo y ubícalo.',['En el estómago, el cuerpo',0],['De la garganta hacia arriba',1]],
+ ['¿Puede esperar 20 minutos?','No tienes que esperarlos. Solo responde si podrías.',['Sí, podría',0],['No, quiero que sea ahora',1]]];
+let paso=0, pts=0;
+function drawTool(){
+  const t=$('#tool');
+  if(paso<PREG.length){
+    const p=PREG[paso];
+    t.innerHTML=`<div class="steps">${PREG.map((_,i)=>`<i class="${i<=paso?'on':''}"></i>`).join('')}</div>
+      <div class="q">${p[0]}</div><p class="q-sub">${p[1]}</p>
+      <div class="opts">${[p[2],p[3]].map(o=>`<button class="opt" data-v="${o[1]}">${o[0]}</button>`).join('')}</div>`;
+    $$('.opt',t).forEach(b=>b.addEventListener('click',()=>{pts+=+b.dataset.v;paso++;drawTool()}));
+  } else {
+    const fis=pts<=1;
+    t.innerHTML=`<div class="verdict">
+      <span class="pill ${fis?'fis':'emo'}">${fis?'Hambre física':'Probablemente antojo'}</span>
+      <div class="big">${fis?'Come.':'Dale 20 minutos.'}</div>
+      <p>${fis?'Tu cuerpo está pidiendo comida de verdad. Si ya hiciste tus tres comidas, toma primero un vaso de agua y, si sigue, come proteína (yogur griego o huevo) antes que dulce.'
+             :'Pon un temporizador y toma agua. El antojo casi siempre se va. <strong>Si a los 20 minutos sigue ahí y estás cerca del periodo, cómete un plátano maduro o un banano</strong>: está contemplado en tu plan. No es una falla. Es información.'}</p>
+      <button class="restart">Volver a empezar</button></div>`;
+    $('.restart',t).addEventListener('click',()=>{paso=0;pts=0;drawTool()});
+  }
+}
+drawTool();
+
+/* ---------- azúcar ---------- */
+function drawSugar(el){
+  if(!el||el.dataset.d) return; el.dataset.d=1;
+  const max=Math.max(...A.azucar.map(s=>s[1]));
+  el.innerHTML=A.azucar.map(s=>`<div class="bar-row${s[2]?' bad':''}">
+    <span>${s[0]}</span><span class="bar-track"><span class="bar-fill" data-w="${s[1]/max*100}"></span></span>
+    <span class="g">${s[1]} g</span></div>`).join('');
+  requestAnimationFrame(()=>setTimeout(()=>
+    $$('.bar-fill',el).forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',i*110)),60));
+}
+
+/* ---------- semáforo ---------- */
+let filt='t';
+function drawFoods(){
+  const q=$('#q').value.trim().toLowerCase();
+  const l=A.semaforo.filter(f=>(filt==='t'||f[1]===filt)&&(!q||f[0].toLowerCase().includes(q)));
+  $('#foods').innerHTML = l.length
+    ? l.map(f=>`<span class="food ${f[1]}"><i></i>${f[0]}${f[2]?` <small>${f[2]}</small>`:''}</span>`).join('')
+    : `<p class="empty">No tengo ese en la lista. Pregúntamelo en la próxima cita y lo ubicamos.</p>`;
+}
+$('#filters').innerHTML=[['t','Todos'],...Object.entries(A.etiquetas)]
+  .map(([k,l])=>`<button class="fchip${k==='t'?' on':''}" data-k="${k}">${l}</button>`).join('');
+$$('#filters .fchip').forEach(b=>b.addEventListener('click',()=>{
+  filt=b.dataset.k; $$('#filters .fchip').forEach(x=>x.classList.toggle('on',x===b)); drawFoods();}));
+$('#q').addEventListener('input',drawFoods);
+drawFoods();
+
+/* ---------- nav activa ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)
+  $$('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}),
+  {rootMargin:'-20% 0px -70% 0px'});
+$$('section').forEach(s=>io.observe(s));
+
+</script>
+</body>
+</html>

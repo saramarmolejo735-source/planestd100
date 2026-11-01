@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}body{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Transformación 100 Días</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: pila vertical de "fichas de servicio" — una cosa a la vez, pulgar en el borde. */
+:root{
+  --paper:#fbf9f7; --surface:#ffffff; --line:#e7e0dc;
+  --ink:#231a1e; --ink-2:#6b5d62; --ink-3:#978a8e;
+  --acc:#5b2740; --acc-soft:#f6ecf0; --acc-line:#e3c9d4;
+  --ocre:#b8721a; --ocre-soft:#fdf3e4; --ocre-line:#eed9b4;
+  --salvia:#4a7055; --salvia-soft:#eef4ef; --salvia-line:#cadcd0;
+  --alerta:#a8412f; --alerta-soft:#fceee9;
+  --d:'Instrument Serif',Georgia,serif;
+  --b:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --m:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#151013; --surface:#1e171b; --line:#352b30;
+  --ink:#f3ecef; --ink-2:#b3a3aa; --ink-3:#8a7a81;
+  --acc:#e9a7c0; --acc-soft:#2a1a22; --acc-line:#452c37;
+  --ocre:#e8b566; --ocre-soft:#2a2016; --ocre-line:#4a3920;
+  --salvia:#8fc09e; --salvia-soft:#1a241d; --salvia-line:#2f4436;
+  --alerta:#f0917c; --alerta-soft:#2d1a16;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#151013; --surface:#1e171b; --line:#352b30;
+  --ink:#f3ecef; --ink-2:#b3a3aa; --ink-3:#8a7a81;
+  --acc:#e9a7c0; --acc-soft:#2a1a22; --acc-line:#452c37;
+  --ocre:#e8b566; --ocre-soft:#2a2016; --ocre-line:#4a3920;
+  --salvia:#8fc09e; --salvia-soft:#1a241d; --salvia-line:#2f4436;
+  --alerta:#f0917c; --alerta-soft:#2d1a16;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--b);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);
+  z-index:30;background:var(--acc)}
+.wrap{max-width:720px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;margin:0}
+.mono{font-family:var(--m);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--ocre);outline-offset:2px;border-radius:6px}
+
+/* ---- hero ---- */
+.hero{background:var(--acc);color:#fdf7f9}
+:root[data-theme="dark"] .hero,
+:root:not([data-theme="light"]) .hero{background:#2a1320}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .hero{background:var(--acc)}}
+.hero .wrap{padding-block:34px 26px}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  color:rgba(255,255,255,.72);margin-bottom:10px}
+.hero h1{font-family:var(--d);font-size:clamp(33px,8.6vw,54px);line-height:.95;letter-spacing:-.01em;color:#fff}
+.hero .lede{margin-top:14px;font-size:17px;color:rgba(255,255,255,.85);max-width:34em}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:22px}
+.tile{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.17);
+  border-radius:11px;padding:11px 8px;text-align:center}
+.tile b{display:block;font-family:var(--m);font-size:19px;font-weight:500;color:#fff;line-height:1.1}
+.tile span{display:block;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin-top:5px;font-weight:600}
+@media (max-width:430px){.tiles{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- navegación pegajosa ---- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--acc);
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.nav .scroll{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:9px;
+  max-width:720px;margin:0 auto}
+.nav .scroll::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;color:rgba(255,255,255,.76);text-decoration:none;font-size:13px;font-weight:600;
+  padding:7px 13px;border-radius:99px;white-space:nowrap}
+.nav a.on{background:#fff;color:var(--hero)}
+
+/* ---- secciones ---- */
+section{padding-block:30px 10px;scroll-margin-top:72px}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+.sec-h .n{font-family:var(--m);font-size:12px;color:var(--acc);font-weight:500}
+.sec-h h2{font-family:var(--d);font-size:30px;line-height:1.05}
+.sec-p{color:var(--ink-2);font-size:15px;margin:0 0 16px;max-width:36em}
+
+/* ---- tarjeta plegable ---- */
+.fold{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  margin-bottom:9px;overflow:hidden}
+.fold>button{width:100%;display:flex;align-items:center;gap:12px;padding:15px 16px;
+  background:none;border:0;text-align:left}
+.fold>button .ic{flex:0 0 32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  font-family:var(--m);font-size:13px;font-weight:500;background:var(--acc-soft);color:var(--acc)}
+.fold>button .tt{flex:1;min-width:0;font-weight:600;font-size:15.5px}
+.fold>button .tt small{display:block;font-weight:400;font-size:13px;color:var(--ink-3);margin-top:1px}
+.fold>button .ch{flex:0 0 auto;color:var(--ink-3);transition:transform .22s}
+.fold.open>button .ch{transform:rotate(180deg)}
+.fold .body{padding:0 16px 16px;font-size:14.5px;color:var(--ink-2)}
+.fold .body>p{margin:0 0 9px}.fold .body>p:last-child{margin-bottom:0}
+.fold .body strong{color:var(--ink)}
+
+/* ---- timeline del día ---- */
+.tl{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tl-row{display:flex;gap:11px;padding:12px 15px;border-bottom:1px solid var(--line);align-items:flex-start}
+.tl-row:last-child{border-bottom:0}
+.tl-row.key{background:var(--acc-soft)}
+.tl-row .t{flex:0 0 46px;font-family:var(--m);font-size:12.5px;color:var(--ink-3);padding-top:2px}
+.tl-row .c{flex:1;min-width:0}
+.tl-row .c b{display:block;font-size:14.5px}
+.tl-row .c span{display:block;font-size:13px;color:var(--ink-2);margin-top:2px}
+.chk{flex:0 0 26px;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);
+  background:var(--surface);display:grid;place-items:center;padding:0;transition:.15s}
+.chk[aria-pressed="true"]{background:var(--salvia);border-color:var(--salvia)}
+.chk svg{opacity:0;stroke:#fff;transition:.15s}
+.chk[aria-pressed="true"] svg{opacity:1}
+.tl-foot{display:flex;align-items:center;gap:10px;justify-content:space-between;
+  padding:11px 15px;background:var(--salvia-soft);border-top:1px solid var(--line);font-size:13.5px}
+.tl-foot button{background:none;border:0;color:var(--ink-3);font-size:12.5px;text-decoration:underline;padding:0}
+
+/* ---- selector de días ---- */
+.days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:13px}
+.days::-webkit-scrollbar{display:none}
+.day-b{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:11px;
+  padding:9px 13px;text-align:center;line-height:1.25}
+.day-b b{display:block;font-size:13.5px;font-weight:700}
+.day-b span{display:block;font-size:10.5px;color:var(--ink-3);font-family:var(--m)}
+.day-b.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.day-b.on span{color:rgba(255,255,255,.72)}
+
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  margin-bottom:9px;overflow:hidden}
+.meal-h{display:flex;align-items:center;gap:11px;padding:12px 15px;background:var(--acc-soft);
+  border-bottom:1px solid var(--acc-line)}
+.meal-h .hh{font-family:var(--m);font-size:13px;color:var(--acc);font-weight:500}
+.meal-h .nn{flex:1;min-width:0;font-weight:700;font-size:14.5px}
+.meal-h .kk{font-family:var(--m);font-size:12px;color:var(--ink-2);text-align:right;line-height:1.3}
+.meal ul{list-style:none;margin:0;padding:9px 15px}
+.meal li{display:flex;gap:9px;padding:5px 0;font-size:14.5px;align-items:baseline}
+.meal li::before{content:"";flex:0 0 5px;height:5px;border-radius:50%;background:var(--ocre);
+  transform:translateY(-2px)}
+.meal li em{font-style:normal;color:var(--ink-3);font-family:var(--m);font-size:12.5px}
+.meal .alc{margin:0 15px 13px;padding:9px 12px;background:var(--ocre-soft);
+  border:1px solid var(--ocre-line);border-radius:10px;font-size:13px;color:var(--ink-2)}
+.meal .alc b{color:var(--ocre)}
+
+/* ---- herramienta de hambre ---- */
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 17px}
+.q{font-family:var(--d);font-size:25px;line-height:1.14;margin-bottom:5px}
+.q-sub{color:var(--ink-2);font-size:14.5px;margin-bottom:16px}
+.opts{display:grid;gap:8px}
+.opt{width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);
+  border-radius:11px;padding:14px 15px;font-size:15px;font-weight:500;transition:.14s}
+.opt:hover{border-color:var(--acc)}
+.verdict{text-align:center;padding:6px 0 2px}
+.verdict .big{font-family:var(--d);font-size:30px;line-height:1.1;margin-bottom:9px}
+.verdict p{color:var(--ink-2);font-size:14.5px;margin:0 auto 14px;max-width:30em}
+.pill{display:inline-block;font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;padding:5px 11px;border-radius:99px;margin-bottom:11px}
+.pill.fis{background:var(--salvia-soft);color:var(--salvia);border:1px solid var(--salvia-line)}
+.pill.emo{background:var(--ocre-soft);color:var(--ocre);border:1px solid var(--ocre-line)}
+.restart{background:none;border:1px solid var(--line);border-radius:99px;padding:8px 17px;
+  font-size:13.5px;color:var(--ink-2)}
+.steps{display:flex;gap:5px;justify-content:center;margin-bottom:17px}
+.steps i{width:22px;height:3px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--acc)}
+
+/* ---- azúcar de la fruta ---- */
+.sugar{display:grid;gap:7px}
+.bar-row{display:grid;grid-template-columns:1fr 2.1fr auto;gap:10px;align-items:center;font-size:14px}
+.bar-track{height:21px;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;background:var(--salvia);width:0;transition:width .85s cubic-bezier(.2,.7,.3,1)}
+.bar-row.bad .bar-fill{background:var(--alerta)}
+.bar-row .g{font-family:var(--m);font-size:13px;color:var(--ink-2);min-width:44px;text-align:right}
+
+/* ---- semáforo ---- */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.fchip{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;
+  padding:7px 14px;font-size:13.5px;font-weight:600}
+.fchip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.search{width:100%;padding:12px 15px;border:1.5px solid var(--line);border-radius:11px;
+  background:var(--surface);color:var(--ink);font:inherit;font-size:15px;margin-bottom:11px}
+.foods{display:flex;flex-wrap:wrap;gap:6px}
+.food{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;
+  padding:7px 11px;font-size:13.5px;background:var(--surface)}
+.food i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.food.v i{background:var(--salvia)} .food.a i{background:var(--ocre)} .food.r i{background:var(--alerta)}
+.food small{color:var(--ink-3);font-family:var(--m);font-size:11.5px}
+.empty{color:var(--ink-3);font-size:14px;padding:14px 0}
+
+/* ---- notas ---- */
+.note{border-left:3px solid var(--ocre);background:var(--ocre-soft);border-radius:0 11px 11px 0;
+  padding:13px 15px;font-size:14px;color:var(--ink-2);margin-top:13px}
+.note b{color:var(--ink)}
+.note.alert{border-color:var(--alerta);background:var(--alerta-soft)}
+.note.ok{border-color:var(--salvia);background:var(--salvia-soft)}
+
+/* ---- medir ---- */
+.tests{display:grid;gap:8px}
+.test{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:13px 15px}
+.test .nm{flex:0 0 26px;height:26px;border-radius:7px;background:var(--acc);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:12px}
+.test .tx{flex:1;min-width:0;font-size:14.5px}
+.test input{width:62px;padding:7px;border:1.5px solid var(--line);border-radius:8px;
+  background:var(--paper);color:var(--ink);font-family:var(--m);font-size:14px;text-align:center}
+
+.cierre{margin-top:18px}
+.cierre .note{font-size:14.5px}
+footer{border-top:1px solid var(--line);margin-top:34px}
+footer .wrap{padding-block:22px 30px;text-align:center;color:var(--ink-3);font-size:12.5px}
+footer b{color:var(--ink-2);display:block;font-size:13.5px;margin-bottom:3px}
+/* ---- suplementos ---- */
+.fold>button .ic.h{flex:0 0 50px;font-size:11.5px;letter-spacing:-.02em;
+  background:var(--ocre-soft);color:var(--ocre)}
+.st{flex:0 0 auto;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+  padding:4px 9px;border-radius:99px;white-space:nowrap}
+.st.sigue{background:var(--salvia-soft);color:var(--salvia);border:1px solid var(--salvia-line)}
+.st.nuevo{background:var(--acc-soft);color:var(--acc);border:1px solid var(--acc-line)}
+.st.para{background:var(--alerta-soft);color:var(--alerta);border:1px solid var(--alerta-soft)}
+.st.opc{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
+@media (max-width:440px){.fold>button .st{font-size:8.5px;padding:3px 6px;letter-spacing:.04em}
+  .fold>button .tt{font-size:14.5px}}
+.flag{display:inline-block;font-family:var(--m);font-size:10.5px;padding:2px 7px;border-radius:5px;
+  margin-right:5px;vertical-align:1px}
+.flag.ok{background:var(--salvia-soft);color:var(--salvia)}
+.flag.chk{background:var(--ocre-soft);color:var(--ocre)}
+
+/* ---- tabla de suplementos ---- */
+.sub-h{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:700;margin:20px 0 8px}
+.tabla{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;margin-bottom:11px}
+.tabla .tr{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--line)}
+.tabla .tr:last-child{border-bottom:0}
+.tabla .h{flex:0 0 52px;font-size:11px;color:var(--acc);line-height:1.25}
+.tabla .nm3{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.tabla .nm3 small{display:block;color:var(--ink-3);font-size:11.5px}
+.tabla .ds{flex:0 0 auto;font-size:11.5px;color:var(--ink-2);text-align:right}
+.tabla .st{flex:0 0 auto}
+@media (max-width:430px){.tabla .ds{display:none}}
+
+/* ---- intercambios ---- */
+.bud{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:13px}
+@media (max-width:560px){.bud{grid-template-columns:repeat(3,1fr)}}
+.bud div{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  padding:10px 5px;text-align:center}
+.bud b{display:block;font-family:var(--m);font-size:19px;font-weight:500;line-height:1.1;color:var(--acc)}
+.bud span{display:block;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:4px;font-weight:600}
+.sw-head{background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:12px;
+  padding:12px 15px;margin-bottom:9px;font-size:14px;color:var(--ink-2)}
+.sw-head b{color:var(--acc)}
+.sw-list{display:grid;gap:6px}
+.sw{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--surface);
+  border:1.5px solid var(--line);border-radius:11px;padding:11px 14px;transition:.14s}
+.sw:hover{border-color:var(--acc)}
+.sw.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.sw .nm2{flex:1;min-width:0;font-size:14.5px;font-weight:500}
+.sw .pr{font-family:var(--m);font-size:12.5px;color:var(--ink-3);text-align:right}
+.sw.on .pr{color:rgba(255,255,255,.76)}
+
+/* ---- mercado ---- */
+.mk-grp{margin-bottom:14px}
+.mk-grp h3{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:7px;font-weight:700}
+.mk-list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mk{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line);padding:11px 14px}
+.mk:last-child{border-bottom:0}
+.mk .nm2{flex:1;min-width:0;font-size:14.5px}
+.mk .qt{font-family:var(--m);font-size:12.5px;color:var(--ink-3);text-align:right}
+.mk.got .nm2,.mk.got .qt{text-decoration:line-through;color:var(--ink-3);opacity:.6}
+.mk-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--salvia-soft);border:1px solid var(--salvia-line);border-radius:12px;
+  padding:11px 15px;margin-bottom:13px;font-size:13.5px}
+.mk-bar button{background:none;border:0;color:var(--ink-3);font-size:12.5px;text-decoration:underline;padding:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- acento por fase ---- */
+:root[data-fase="2"]{--acc:#1d4f61;--acc-soft:#e8f0f3;--acc-line:#c2d8e0}
+:root[data-fase="3"]{--acc:#8a4420;--acc-soft:#fbeee6;--acc-line:#eccfb9}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"])[data-fase="2"]{--acc:#8fc8dd;--acc-soft:#15242b;--acc-line:#274049}
+  :root:not([data-theme="light"])[data-fase="3"]{--acc:#efab76;--acc-soft:#2a1b12;--acc-line:#4a3122}}
+:root[data-theme="dark"][data-fase="2"]{--acc:#8fc8dd;--acc-soft:#15242b;--acc-line:#274049}
+:root[data-theme="dark"][data-fase="3"]{--acc:#efab76;--acc-soft:#2a1b12;--acc-line:#4a3122}
+
+/* ---- cita textual de la alumna ---- */
+.cita{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-left:3px solid rgba(255,255,255,.55);border-radius:0 13px 13px 0;
+  padding:15px 17px;margin-top:20px}
+.cita q{font-family:var(--d);font-size:clamp(19px,5vw,23px);line-height:1.25;color:#fff;
+  display:block;quotes:'\201C' '\201D'}
+.cita cite{display:block;font-style:normal;font-size:12px;color:rgba(255,255,255,.62);margin-top:9px;
+  letter-spacing:.03em}
+/* ---- mensaje personal ---- */
+.carta{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:19px 18px;position:relative;margin-bottom:13px}
+.carta::before{content:"";position:absolute;left:0;top:19px;bottom:19px;width:3px;
+  background:var(--acc);border-radius:0 3px 3px 0}
+.carta p{font-size:15.5px;line-height:1.62;color:var(--ink-2);margin:0 0 13px}
+.carta p:first-child{font-size:16.5px;color:var(--ink)}
+.carta p strong,.carta p b{color:var(--ink)}
+.firma-carta{display:flex;align-items:center;gap:13px;margin-top:17px;padding-top:15px;
+  border-top:1px solid var(--line)}
+.firma-carta .rub{font-family:var(--d);font-style:italic;font-size:30px;color:var(--acc);line-height:1}
+.firma-carta span:last-child{font-size:12px;color:var(--ink-3);line-height:1.4}
+/* ---- la fase ---- */
+.fase-card{background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:15px;
+  padding:18px 17px;margin-bottom:11px}
+.fase-card .ttl{font-family:var(--d);font-size:24px;line-height:1.1;color:var(--acc);margin-bottom:7px}
+.fase-card p{font-size:14.5px;color:var(--ink-2);margin:0 0 9px}
+.fase-card p:last-child{margin-bottom:0}
+.pilares{display:grid;gap:7px;margin-top:12px}
+.pilar{display:flex;gap:10px;align-items:flex-start;background:var(--surface);
+  border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+.pilar .pn{flex:0 0 22px;height:22px;border-radius:6px;background:var(--acc);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:11px}
+.pilar .pt{flex:1;min-width:0;font-size:14px}
+.pilar .pt b{display:block}
+.pilar .pt span{color:var(--ink-3);font-size:12.5px}
+.ruta{display:flex;gap:5px;align-items:stretch;margin-bottom:13px}
+.ruta div{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 7px;text-align:center;
+  background:var(--surface);font-size:11.5px;color:var(--ink-3);line-height:1.3}
+.ruta div b{display:block;font-size:13px;color:var(--ink-2)}
+.ruta div.now{background:var(--acc);border-color:var(--acc);color:#fff}
+.ruta div.now b{color:#fff}
+.ruta div.done{opacity:.55}
+</style>
+</head>
+<body>
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   TRANSFORMACIÓN 100 DÍAS · FASE 3 — SANDRA SARRIA
+   ND. MsC. Sara C. Marmolejo — Nutricionista Dietista, énfasis clínico
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ══ BLOQUE A · DOCTRINA DEL PROGRAMA — NO SE TOCA ══════════════════ */
+const FASES = {
+1:{ titulo:'Microbiota y digestión',
+    nom:'Microbiota, digestión y desinflamación intestinal',
+    corto:'Primero reparamos', dias:'Días 1 al 33',
+    obj:'Restaurar el equilibrio de tu flora intestinal, reducir la permeabilidad de la mucosa, desinflamar el tracto digestivo y normalizar la fermentación bacteriana.',
+    porque:'Nada de lo que viene después funciona bien si el intestino está inflamado. Esta fase construye el terreno para que las fases 2 y 3 sí hagan efecto.',
+    pilares:[['Microbiota y disbiosis','Restaurar la eubiosis por el eje intestino-cerebro'],
+             ['FODMAPs','Reducir la fermentación que te hincha'],
+             ['Probióticos estratégicos','Diversidad microbiana, solo si tu caso lo pide']],
+    espera:['Menos hinchazón y menos gases','Digestión más predecible',
+            'Energía más pareja durante el día','Menos antojos de dulce',
+            'El peso que se mueve es sobre todo agua intestinal y glucógeno']},
+2:{ titulo:'Regulación hormonal',
+    nom:'Regulación hormonal integral',
+    corto:'Ahora optimizamos', dias:'Días 34 al 66',
+    obj:'Normalizar el eje del cortisol, dejar que las hormonas de la saciedad (GLP-1 y GIP) trabajen sin interferencia inflamatoria, y sincronizar tus ritmos circadianos.',
+    porque:'Con el intestino ya reparado, tu cuerpo por fin puede responder a las estrategias hormonales. Antes de la Fase 1 esto no habría servido de nada.',
+    pilares:[['Eje del cortisol (HPA)','Equilibrio neuroendocrino con adaptógenos y descanso'],
+             ['Incretinas GLP-1 y GIP','Saciedad y glucosa estables desde la comida'],
+             ['Sincronización circadiana','Luz de la mañana, oscuridad de la noche, horarios fijos']],
+    espera:['Energía estable todo el día, sin caídas','Menos antojos y menos hambre emocional',
+            'Mejor calidad de sueño','Apetito y saciedad que se autorregulan',
+            'Menos estrés percibido','Glucosa más estable después de comer']},
+3:{ titulo:'Metabolismo y composición',
+    nom:'Metabolismo, composición corporal y rendimiento',
+    corto:'Por fin exigimos', dias:'Días 67 al 100',
+    obj:'Aumentar tu capacidad mitocondrial, lograr pérdida de grasa real sin que el cuerpo active defensas, y optimizar la ganancia de músculo con proteína estratégica, cargas altas y ciclado de carbohidratos.',
+    porque:'Esta fase solo es posible porque las Fases 1 y 2 ya resolvieron la inflamación intestinal y la desregulación hormonal. Empezar por aquí es lo que hace fracasar a las dietas.',
+    pilares:[['Composición corporal','Proteína estratégica para ganar músculo'],
+             ['Oxidación de grasa','Activar AMPK y PGC-1α: pérdida de grasa real'],
+             ['Ciclado de carbohidratos','Flexibilidad metabólica y eficiencia energética']],
+    espera:['Cambio visible en composición: menos grasa, igual o más músculo',
+            'Más rendimiento y resistencia','Más energía con menos comida',
+            'Mínimo efecto rebote, gracias al trabajo de las fases anteriores',
+            'Una relación sana con la comida y claridad sobre cómo responde tu cuerpo']}
+};
+const SEC = ['Primero reparamos','Ahora optimizamos','Por fin exigimos'];
+
+/* ══ BLOQUE B · DATOS DE LA ALUMNA ══════════════════════════════════ */
+const A = {
+
+fase: 3,
+nombre: 'Sandra',
+edad: 49, ciudad: 'Cali',
+inicio: '2 de noviembre', fin: '4 de diciembre de 2026',
+
+cita: 'Me imagino despertando y sintiéndome más ligera, fuerte y con energía, con más autoestima, usando la ropa que me gusta.',
+citaDe: 'Tus palabras en el formulario · 20 de agosto de 2026',
+
+tiles: [['2.050','kcal al día'],['140 g','proteína mínima'],['4','entrenos / semana'],['2 L','de agua al día']],
+
+mensaje: [
+ 'Hace dos meses escribiste que te imaginabas <b>«más ligera, fuerte y con energía, usando la ropa que te gusta»</b>. Al cerrar la primera etapa me dijiste que lo que más valorabas era <b>«aprender a ser constante y descubrir que se pueden cumplir metas»</b>. Ya pasó: bajaste 5 cm de cintura y pasaste de dormir 3 a dormir 7. Esta última fase convierte eso en músculo.',
+ 'Dos cosas para que empieces tranquila. <b>Tu tiroides salió normal</b> (TSH 1,61 · T4 libre 1,08): la niebla mental y la hinchazón de la cara no venían de ahí, venían del estrés y de los días en que no alcanzabas a almorzar — y eso sí lo arreglamos aquí. Y segundo: <b>en estos 33 días la báscula va a subir, y esa es la meta.</b> Entra creatina, entra más comida y entra fuerza cuatro veces por semana. Pasar de 40,8 a 42–43 kg con la cintura igual es exactamente lo que buscamos.'
+],
+mensajeFirma: 'Sara',
+
+arranque: [
+ ['Qué cambia','Ahora sí exigimos',[
+  '<b>Más comida: 2.050 kcal.</b> Cien más que la fase pasada, porque ahora entrenas cuatro veces por semana.',
+  '<b>Entra la creatina.</b> 3 g al día con el batido de la tarde. Es el suplemento con más evidencia para ganar músculo a tu edad, y de los más baratos.',
+  '<b>Cuatro entrenos de fuerza.</b> En casa, sin equipos, con banda elástica y tu propio peso. El plan te lo entrego aparte.',
+  '<b>Dos litros de agua.</b> En el test dijiste que tomas menos de un litro: es la palanca más barata que tienes.']],
+ ['Qué NO cambia','Más de lo que crees',[
+  'Las porciones que ya te funcionaron. Seguimos en <b>5 tomas</b>, con el mismo tamaño de plato.',
+  'Sigues comiendo de todo: arroz, pasta, arepa, plátano, papa, yuca, fríjol, lenteja. <b>Nada queda prohibido por FODMAP</b> — eso lo cerramos en la Fase 1 y toleraste todo.',
+  'Sigue la <b>comida de bolsillo</b> para los días en que no alcanzas a almorzar.',
+  'Sigue tu horario: desayuno 5:05, recreo 9:30, almuerzo 2:15, cena 7:30, dormir 9:30.']],
+ ['La única regla','Si todo falla, esta no',[
+  '<b>No te saltes el almuerzo. Nunca.</b>',
+  'En la Fase 1 hubo cuatro días sin almorzar y perdiste 1,2 kg que no queríamos perder. De todo lo que puede salir mal, eso es lo único que por sí solo daña esta fase.',
+  'Si el día se te cruza: <b>1 scoop de ISO 100 + 1 banano + 20 g de nueces + 1 arepa o torta de avena congelada + 1 cda de mantequilla de maní.</b> Diez minutos, sin plato ni calentar.']],
+ ['Tus laboratorios, leídos','Orden del 10 de octubre',[
+  '<b>TSH 1,61 y T4 libre 1,08: tiroides normal.</b> Queda descartado el hipotiroidismo que sospechábamos. Eso es una buena noticia y cambia el seguimiento.',
+  'Los anticuerpos <b>anti-TPO siguen pendientes</b>. Cuando lleguen, mándamelos: no cambian lo que comes, pero sí el control con tu médico.',
+  'Seguimos <b>sin ashwagandha ni rhodiola</b>, esta vez solo por la sertralina. El estrés lo trabajamos con magnesio, glicina, luz de la mañana y sueño.',
+  'Faltan por pedir antes de la cita de cierre: glucemia en ayunas, perfil lipídico, vitamina D 25-OH, ferritina, hemograma y creatinina.']]
+],
+notaArranque: '<b>Si un día te quedas con hambre:</b> repite verdura libre, súmale una fruta y una cucharada de mantequilla de maní. En esta fase el hambre no se aguanta — se come. Lo único que no se hace es saltarse una toma.',
+
+dia: [
+ ['4:30','Despertar + 10 min de luz natural','Ordena el cortisol de la mañana y te ayuda a dormir en la noche.',0],
+ ['5:05','Desayuno — mínimo 30 g de proteína','Antes del MIO. Es la toma que rompe el ayuno de la noche.',1],
+ ['9:30','Media mañana (recreo)','Lácteo + fruta + grasa. Va listo desde la noche anterior.',1],
+ ['13:00','Último café del día','Ocho horas antes de dormir. Después, agua o aromática.',0],
+ ['14:15','Almuerzo — o comida de bolsillo','La toma más grande del día. No se salta.',1],
+ ['16:00','Fuerza (lun · mar · jue · vie)','Bajo impacto, en casa, 45 minutos. Plan aparte.',1],
+ ['17:15','ISO 100 + creatina','Proteína y creatina en la ventana de recuperación.',1],
+ ['19:30','Cena con carbohidrato','El arroz o la papa de la noche bajan el cortisol y mejoran el sueño.',1],
+ ['20:30','Magnesio + glicina · pantallas fuera','Preparan el sueño profundo, que es cuando se construye el músculo.',0],
+ ['21:30','Dormir','Sostener las 7 horas que ya ganaste.',0],
+ ['—','2 litros de agua','Un vaso en cada toma + una botella en el bolso. La creatina la necesita.',1]
+],
+notaDia: '<b>Por qué el café se corta a la 1:00 p. m.</b> Entrenas a las 4:00 y te acuestas a las 9:30. Media cafeína sigue en el cuerpo ocho horas después: una taza a las 3 de la tarde te quita sueño profundo justo la noche en que el músculo se construye. Por eso en esta fase <b>no hay pre-entreno con cafeína</b>: tu energía del entreno sale del almuerzo.',
+
+suplementos: [
+ ['17:15','Creatina monohidrato','3 g','nuevo','Disuelta en el batido o en agua'],
+ ['17:15','ISO 100 (proteína aislada)','1 scoop','sigue','Días de entreno'],
+ ['14:15','Omega-3 alto EPA','2 g','sigue','Con el almuerzo'],
+ ['14:15','Vitamina D3','2.000 UI','sigue','Con la grasa del almuerzo'],
+ ['20:30','Magnesio bisglicinato','300 mg','sigue','Noche'],
+ ['20:30','Glicina','3 g','sigue','Noche, junto al magnesio'],
+ ['14:15','Calcio citrato','500 mg','opc','Solo el día que no alcanzaste 2 lácteos'],
+ ['—','Probiótico en cápsula','—','para','Lo reemplazan el chucrut, el kéfir y el kumis diarios'],
+ ['—','Ashwagandha / rhodiola','—','para','Fuera mientras tomes sertralina']
+],
+suplFolds: [
+ ['Por qué este horario','Una regla y tres anclas',[
+  '<b>La regla:</b> cada suplemento va pegado a algo que ya haces, para que no dependa de que te acuerdes.',
+  '<b>Ancla 1 — el almuerzo (2:15).</b> Omega-3 y vitamina D son liposolubles: necesitan la grasa del plato (el aguacate y el aceite de oliva) para absorberse. Solos y en ayunas se pierden.',
+  '<b>Ancla 2 — el batido (5:15).</b> Creatina y proteína juntas. No porque haya una ventana mágica, sino porque así no se te olvida ninguna de las dos.',
+  '<b>Ancla 3 — la noche (8:30).</b> Magnesio y glicina bajan la temperatura corporal y preparan el sueño profundo. De día no sirven igual.',
+  '<b>El calcio va aparte</b> del hierro de las comidas: si lo tomas, que sea en el almuerzo y no con la cena de carne.']],
+ ['Lo que cambia esta fase','Entra creatina, sale el probiótico',[
+  '<b>Entra:</b> creatina monohidrato, 3 g al día. Es lo único nuevo.',
+  '<b>Sale:</b> el probiótico en cápsula. Tu digestión ya se normalizó y ahora comes chucrut, kéfir, kumis y yogur todos los días — la comida ya hace ese trabajo y te ahorra el gasto.',
+  '<b>Siguen:</b> omega-3, magnesio, glicina, vitamina D y la proteína en polvo.',
+  '<b>No entran:</b> ashwagandha, rhodiola ni ningún adaptógeno, por la sertralina. Tampoco cafeína de pre-entreno, por tu hora de entreno.',
+  '<b>Quemadores, termogénicos y "detox": no.</b> Con tu peso serían un error, no un atajo.']],
+ ['Dónde comprarlos en Cali','Lo que pediste',[
+  '<span class="flag ok">fácil</span><b>Creatina y proteína aislada.</b> Tiendas de nutrición deportiva, grandes superficies (Éxito, Jumbo) y domicilios por app desde tiendas de suplementos. Pide <b>creatina monohidrato sin sabor</b>: es la barata y la que tiene evidencia. Las versiones "HCl" o "tamponada" cuestan más y no rinden más.',
+  '<span class="flag ok">fácil</span><b>Magnesio bisglicinato, glicina y vitamina D3.</b> Droguerías de cadena y tiendas naturistas; son los más fáciles de conseguir en la ciudad.',
+  '<span class="flag chk">verifica</span><b>Omega-3: mira el registro sanitario.</b> Compra solo presentaciones con <b>registro INVIMA vigente impreso en la caja</b>. En agosto el INVIMA alertó sobre un omega-3 importado que se estaba vendiendo en el país sin registro. Si lo compras por marketplace, revisa ese dato antes de pagar.',
+  '<span class="flag chk">verifica</span><b>Si pides importado</b> por plataformas de compra en Estados Unidos, cuenta con 2 a 3 semanas de envío. Haz el pedido cuando te quede media tarrina, no cuando se acabe.',
+  '<b>Orden de prioridad si el presupuesto aprieta:</b> 1) proteína en polvo, 2) creatina, 3) magnesio, 4) vitamina D, 5) omega-3. Las dos primeras son las que mueven esta fase.']]
+],
+
+dias: [
+ ['Lun','Lunes 2 de noviembre','Día de fuerza · carga alta de carbohidrato',2065,157,[
+  ['5:05','Avena proteica con ISO',555,37,['Avena en hojuelas 60 g (5 cdas, en seco)','1 scoop de ISO 100','Banano 100 g (1 pequeño)','Nueces 20 g (5 mitades)','Canela y café sin azúcar'],''],
+  ['9:30','Yogur griego con mora',265,20,['Yogur griego 0 % sin azúcar 150 g (1 pocillo)','Mora 100 g (½ taza)','Kiwi 75 g (1 grande)','Almendras 15 g (12 unidades)'],''],
+  ['14:15','Pollo con arroz y remolacha',610,39,['Pollo 100 g (1 palma)','Arroz cocido 200 g (1 pocillo)','Remolacha rallada 80 g (½ taza)','Ensalada de lechuga, tomate y pepino','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)','Aguacate 50 g (⅓ de unidad)'],''],
+  ['17:15','Post-entreno · ISO 100 + creatina',170,26,['1 scoop de ISO 100 en agua','Naranja 130 g (1 unidad)','Creatina monohidrato 3 g'],''],
+  ['19:30','Tilapia con papa y espinaca',465,35,['Tilapia 110 g (1 palma generosa)','Papa cocida 250 g (1 grande)','Espinaca salteada 90 g (1 taza)','Aceite de oliva 10 g (2 cdtas)','Aromática de jengibre'],'']]],
+
+ ['Mar','Martes 3 de noviembre','Día de fuerza · el día de la pasta',2115,152,[
+  ['5:05','Huevos con arepa de choclo',515,32,['2 huevos + 3 claras revueltos con cebolla larga','Arepa de choclo 70 g (½ unidad)','Queso campesino 40 g (1 tajada gruesa)','Papaya 150 g (1 taza)','Café sin azúcar'],''],
+  ['9:30','Kumis con fresa y granola',320,12,['Kumis sin azúcar 150 g (1 pocillo)','Fresa 150 g (1 taza)','Granola sin azúcar 30 g (3 cdas)','Chía 10 g (1 cda rasa)'],''],
+  ['14:15','Res con pasta y remolacha',600,44,['Res magra 110 g (1 palma)','Pasta cocida 180 g (1 pocillo colmado)','Tomate y albahaca','Remolacha 80 g (½ taza)','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)'],''],
+  ['17:15','Post-entreno · ISO 100 + creatina',250,29,['1 scoop de ISO 100 en agua','Kiwi 75 g (1 grande)','Mantequilla de maní 16 g (1 cda)','Creatina monohidrato 3 g'],''],
+  ['19:30','Pollo con plátano y habichuela',430,35,['Pollo desmechado 100 g (1 palma)','Plátano cocido 160 g (½ unidad)','Habichuela 100 g (1 taza)','Aceite de oliva 5 g (1 cdta)','Chucrut 60 g (2 cdas)'],'']]],
+
+ ['Mié','Miércoles 4 de noviembre','Día de descanso · carga normal y caminata',2045,144,[
+  ['5:05','Torta de avena y clara',525,32,['Torta de avena (1 porción, del congelador)','4 claras revueltas','1 huevo entero','Piña 130 g (¾ de taza)','Nueces 20 g (5 mitades)'],''],
+  ['9:30','Yogur griego con cacao',320,20,['Yogur griego 150 g (1 pocillo)','Cacao 70 % 10 g (2 cuadritos)','Banano 100 g (1 pequeño)','Almendras 15 g (12 unidades)'],''],
+  ['14:15','Tilapia con arroz y mazorca',620,41,['Tilapia 120 g (1 palma generosa)','Arroz cocido 160 g (¾ de pocillo)','Mazorca desgranada 120 g (1 unidad)','Ensalada de zanahoria, tomate y lechuga','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)','Aguacate 50 g (⅓ de unidad)'],''],
+  ['17:15','Media tarde (sin entreno)',140,16,['Yogur griego 150 g (1 pocillo)','Fresa 150 g (1 taza)','Creatina monohidrato 3 g'],''],
+  ['19:30','Res con papa y espinaca',440,35,['Res magra 100 g (1 palma pequeña)','Papa cocida 200 g (1 mediana grande)','Espinaca 90 g (1 taza)','Aceite de oliva 5 g (1 cdta)','Chucrut 60 g (2 cdas)'],'']]],
+
+ ['Jue','Jueves 5 de noviembre','Día de fuerza · salmón, el omega-3 del plato',2105,146,[
+  ['5:05','Avena proteica con ISO',515,37,['Avena en hojuelas 60 g (5 cdas, en seco)','1 scoop de ISO 100','Fresa 150 g (1 taza)','Nueces 20 g (5 mitades)','Café sin azúcar'],''],
+  ['9:30','Huevo con arepa y maní',385,14,['1 huevo cocido','Arepa de choclo 70 g (½ unidad)','Tomate en rodajas','Mantequilla de maní 16 g (1 cda)','Papaya 150 g (1 taza)'],''],
+  ['14:15','Pollo con yuca y remolacha',535,38,['Pollo 110 g (1 palma)','Yuca cocida 150 g (1 trozo grande)','Remolacha 80 g (½ taza)','Ensalada verde con limón','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)'],''],
+  ['17:15','Post-entreno · ISO 100 + creatina',170,26,['1 scoop de ISO 100 en agua','Naranja 130 g (1 unidad)','Creatina monohidrato 3 g'],''],
+  ['19:30','Salmón con papa y habichuela',500,31,['Salmón 110 g (1 palma)','Papa cocida 220 g (1 grande)','Habichuela 100 g (1 taza)','Aceite de oliva 5 g (1 cdta)','Aromática de manzanilla'],'']]],
+
+ ['Vie','Viernes 6 de noviembre','Día de fuerza · lenteja, para el hierro',2035,150,[
+  ['5:05','Arepa de Sary con huevo',500,32,['Arepa de Sary (1 unidad, según tu receta)','2 huevos + 2 claras','Queso campesino 30 g (1 tajada)','Papaya 150 g (1 taza)','Café sin azúcar'],''],
+  ['9:30','Kéfir con mora y chía',300,10,['Kéfir 150 g (1 pocillo)','Mora 100 g (½ taza)','Chía 15 g (1 cda)','Banano 100 g (1 pequeño)'],''],
+  ['14:15','Res con arroz y lenteja',650,45,['Res magra 100 g (1 palma pequeña)','Arroz cocido 160 g (¾ de pocillo)','Lenteja bien cocida 100 g (½ pocillo)','Ensalada de tomate y limón','Aceite de oliva 5 g (1 cdta)','Aguacate 50 g (⅓ de unidad)'],''],
+  ['17:15','Post-entreno · ISO 100 + creatina',155,26,['1 scoop de ISO 100 en agua','Kiwi 75 g (1 grande)','Creatina monohidrato 3 g'],''],
+  ['19:30','Pollo con plátano y zanahoria',430,37,['Pollo 110 g (1 palma)','Plátano cocido 140 g (⅓ de unidad)','Zanahoria 80 g (1 taza)','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)'],'']]],
+
+ ['Sáb','Sábado 7 de noviembre','Descanso · batch cooking de la semana',1975,157,[
+  ['6:00','Avena proteica con leche',515,41,['Avena en hojuelas 60 g (5 cdas, en seco)','Leche deslactosada 200 mL (1 vaso)','1 scoop de ISO 100','Banano 100 g (1 pequeño)','Canela'],''],
+  ['10:00','Yogur griego con piña',285,19,['Yogur griego 150 g (1 pocillo)','Piña 130 g (¾ de taza)','Nueces 20 g (5 mitades)'],''],
+  ['14:15','Tilapia con pasta y remolacha',590,45,['Tilapia 120 g (1 palma generosa)','Pasta cocida 160 g (¾ de pocillo)','Remolacha 80 g (½ taza)','Ensalada verde','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)','Aguacate 50 g (⅓ de unidad)'],''],
+  ['17:15','Media tarde (sin entreno)',140,16,['Yogur griego 150 g (1 pocillo)','Fresa 150 g (1 taza)','Creatina monohidrato 3 g'],''],
+  ['19:30','Res con papa y espinaca',445,36,['Res magra 100 g (1 palma pequeña)','Papa cocida 220 g (1 grande)','Espinaca 90 g (1 taza)','Aceite de oliva 5 g (1 cdta)'],'']]],
+
+ ['Dom','Domingo 8 de noviembre','Descanso · comida de casa y una comida libre',2015,140,[
+  ['6:00','Huevos con arepa y queso',515,32,['2 huevos + 3 claras','Arepa de choclo 70 g (½ unidad)','Queso campesino 40 g (1 tajada gruesa)','Papaya 150 g (1 taza)','Café sin azúcar'],''],
+  ['10:00','Yogur griego con mora y maní',285,21,['Yogur griego 150 g (1 pocillo)','Mora 100 g (½ taza)','Cacao 70 % 10 g (2 cuadritos)','Mantequilla de maní 16 g (1 cda)'],''],
+  ['14:15','Pollo con arroz y fríjol',630,45,['Pollo 100 g (1 palma)','Arroz cocido 160 g (¾ de pocillo)','Fríjol cocido 90 g (½ pocillo)','Ensalada de aguacate y tomate','Aceite de oliva 5 g (1 cdta)','Aguacate 50 g (⅓ de unidad)'],'Esta es tu comida libre de la semana si prefieres usarla aquí'],
+  ['17:15','Media tarde (sin entreno)',155,6,['Kumis sin azúcar 150 g (1 pocillo)','Naranja 130 g (1 unidad)','Creatina monohidrato 3 g'],''],
+  ['19:30','Tilapia con plátano y habichuela',430,36,['Tilapia 120 g (1 palma generosa)','Plátano cocido 160 g (½ unidad)','Habichuela 100 g (1 taza)','Chucrut 60 g (2 cdas)','Aceite de oliva 5 g (1 cdta)'],'']]]
+],
+notaDias: '<b>Todo el gramaje está en COCIDO</b> — es lo que sirves en el plato, no lo que compras. La medida casera manda: una palma de proteína, un puño de carbohidrato, un pulgar de grasa. No necesitas pesar siempre. Promedio de la semana: <b>2.051 kcal</b> y <b>149 g de proteína</b>.',
+
+grupos: [
+ ['Proteína',5,'≈25 g de proteína',0,[
+  ['Pechuga de pollo o pavo','1 palma · 100 g'],
+  ['Res magra en bistec','1 palma pequeña · 100 g'],
+  ['Tilapia o bocachico','1 palma generosa · 110 g'],
+  ['Salmón','1 palma · 110 g'],
+  ['Atún al agua','¾ de lata · 90 g'],
+  ['Huevo entero','2 unidades'],
+  ['Claras de huevo','5 unidades'],
+  ['ISO 100 (proteína)','1 scoop · 30 g'],
+  ['Queso campesino','1 tajada gruesa · 40 g']]],
+ ['Carbohidrato',5,'≈30 g de carbohidrato',0,[
+  ['Arroz cocido','½ pocillo · 110 g'],
+  ['Pasta cocida','¾ de pocillo · 120 g'],
+  ['Avena en hojuelas','5 cdas · 45 g seco'],
+  ['Papa cocida','1 mediana · 150 g'],
+  ['Plátano cocido','⅓ de unidad · 100 g'],
+  ['Yuca cocida','1 trozo · 90 g'],
+  ['Mazorca','1 unidad'],
+  ['Arepa de choclo','½ unidad · 70 g'],
+  ['Arepa de Sary','1 unidad'],
+  ['Lenteja o fríjol cocido','½ pocillo · 90 g']]],
+ ['Fruta',3,'≈15 g de carbohidrato',0,[
+  ['Papaya','1 taza · 150 g'],['Piña','¾ de taza · 130 g'],['Fresa','1 taza · 150 g'],
+  ['Mora','½ taza · 100 g'],['Kiwi','1 grande · 75 g'],['Banano','1 pequeño · 100 g'],
+  ['Naranja','1 unidad · 130 g'],['Lulo','2 unidades']]],
+ ['Grasa',3,'≈10 g de grasa',0,[
+  ['Aceite de oliva','1 cdta · 5 g'],['Aguacate','⅓ de unidad · 50 g'],
+  ['Nueces','5 mitades · 20 g'],['Almendras','12 unidades · 15 g'],
+  ['Chía','1 cda · 15 g'],['Mantequilla de maní','1 cda · 16 g'],
+  ['Cacao 70 %','2 cuadritos · 10 g']]],
+ ['Lácteo',2,'≈15 g de proteína',0,[
+  ['Yogur griego 0 % sin azúcar','1 pocillo · 150 g'],
+  ['Kéfir','1 pocillo · 150 g'],
+  ['Kumis sin azúcar','1 pocillo · 150 g'],
+  ['Leche deslactosada','1 vaso · 200 mL']]],
+ ['Verdura','5+','libres · no se cuentan',1,[
+  ['Remolacha','½ taza'],['Zanahoria','1 taza'],['Espinaca','1 taza'],
+  ['Habichuela','1 taza'],['Tomate','1 unidad'],['Pepino','1 taza'],
+  ['Lechuga','2 tazas'],['Cebolla larga','al gusto'],['Chucrut','2 cdas · 60 g']]]
+],
+reglaCambio: '<b>La única regla del cambio:</b> cambia <b>dentro</b> del mismo grupo, nunca <b>entre</b> grupos. El arroz se cambia por papa o por pasta — no por más pollo. Así los 7 días escritos te duran los 33.',
+estirar: ['Cómo estirar la semana','Tres trucos, sin cuentas',[
+ '<b>Rota la proteína.</b> Donde dice pollo, pon res, tilapia, atún o huevo. El plato cambia por completo y los números no se mueven.',
+ '<b>Rota el almidón.</b> Arroz, pasta, papa, yuca, plátano, mazorca y arepa valen lo mismo. Con eso solo ya tienes siete almuerzos distintos.',
+ '<b>Rota la fruta y el fermentado.</b> Papaya, piña, fresa, mora, kiwi, banano y naranja se cambian entre sí; yogur, kéfir y kumis también.',
+ '<b>Y un cuarto, gratis:</b> cambia el aliño. Cúrcuma y comino un día, limón y cilantro otro, jengibre y laurel el siguiente. Misma comida, otra cara.']],
+
+mercado: [
+ ['Proteínas',[
+  ['Pechuga de pollo','700 g'],['Res magra','550 g'],['Tilapia o bocachico','600 g'],
+  ['Salmón','150 g'],['Huevos','1 panal de 15'],['Queso campesino','150 g'],
+  ['ISO 100 (proteína)','5 scoops'],['Creatina monohidrato','1 tarro']]],
+ ['Granos y tubérculos',[
+  ['Arroz','300 g'],['Pasta','150 g'],['Avena en hojuelas','300 g'],
+  ['Papa','1 kg'],['Plátano','3 unidades'],['Yuca','250 g'],
+  ['Mazorca','1 unidad'],['Arepa de choclo','1 paquete'],
+  ['Lenteja seca','60 g'],['Fríjol seco','60 g'],['Granola sin azúcar','100 g']]],
+ ['Verduras',[
+  ['Remolacha','500 g'],['Espinaca','400 g'],['Habichuela','400 g'],
+  ['Zanahoria','500 g'],['Tomate','500 g'],['Lechuga','1 unidad'],
+  ['Pepino','2 unidades'],['Cebolla larga','1 manojo'],['Repollo (para chucrut)','1 mediano']]],
+ ['Frutas',[
+  ['Banano','5 unidades'],['Papaya','1 pequeña'],['Mora','400 g'],
+  ['Fresa','700 g'],['Kiwi','3 unidades'],['Naranja','5 unidades'],['Piña','1 pequeña']]],
+ ['Lácteos y fermentados',[
+  ['Yogur griego 0 % sin azúcar','1 kg'],['Kumis sin azúcar','500 mL'],
+  ['Kéfir','250 mL'],['Leche deslactosada','500 mL']]],
+ ['Grasas y despensa',[
+  ['Nueces','150 g'],['Almendras','100 g'],['Chía','100 g'],
+  ['Mantequilla de maní natural','1 frasco'],['Aguacate','2 unidades'],
+  ['Aceite de oliva extra virgen','250 mL'],['Cacao 70 %','1 barra'],
+  ['Cúrcuma, comino, canela, laurel','al gusto'],['Café','1 paquete']]]
+],
+mercadoFolds: [
+ ['El domingo de cocina','45 minutos que resuelven la semana',[
+  '<b>1.</b> Pon a cocinar el arroz y las papas. Déjalos enfriar 12 horas en la nevera y recaliéntalos cuando los uses: así parte del almidón se vuelve almidón resistente — alimenta tus bacterias buenas, gratis.',
+  '<b>2.</b> Cocina el pollo y la res, desmecha y guarda en bolsitas de 100 g. Son la base de cinco almuerzos y cinco cenas.',
+  '<b>3.</b> Deja 3 frascos de avena proteica listos y 1 torta de avena cortada y congelada.',
+  '<b>4.</b> Prepara tus arepas de Sary y congélalas por unidad, separadas con papel.',
+  '<b>5.</b> Lava y corta remolacha, zanahoria, habichuela, espinaca, tomate y lechuga.',
+  '<b>6.</b> Arma 4 bolsitas de frutos secos de 20 g y deja la fruta lavada.',
+  '<b>7.</b> Mete en el bolso del colegio la <b>comida de bolsillo</b>: 1 sobrecito de ISO 100, nueces, 1 arepa congelada y la mantequilla de maní.']],
+ ['Dónde comprar en Cali','Mercado y despensa',[
+  '<b>Plazas de mercado y fruvers:</b> es donde mejor te sale la verdura, la fruta, el plátano, la yuca y la mazorca. Vale la pena ir una sola vez por semana y dejar todo cortado.',
+  '<b>Carnicería de confianza:</b> pide la res <b>magra, sin grasa visible</b>, y el pollo en pechuga sin piel. Pide que te lo porcionen en bolsitas de 120 g en crudo (quedan 100 g cocidos).',
+  '<b>Supermercado:</b> arroz, pasta, avena, granola sin azúcar, yogur griego, kéfir, kumis, leche deslactosada, frutos secos, chía, mantequilla de maní y aceite de oliva.',
+  '<b>Lo único que cuesta:</b> el aceite de oliva, los frutos secos y el salmón. Si hay que recortar, el salmón se cambia por tilapia o atún y el aceite de oliva se usa solo en crudo, para que rinda.',
+  '<b>El chucrut lo haces tú</b> con un repollo y sal: queda por una fracción del precio del importado. La receta está más abajo.']],
+ ['Receta · Avena proteica en frascos','3 porciones, 10 minutos',[
+  '<b>Para 3 frascos:</b> 180 g de avena en hojuelas (15 cdas), 600 mL de agua o leche deslactosada, 3 scoops de ISO 100, canela.',
+  '<b>1.</b> Cocina la avena con el líquido a fuego bajo, 5 minutos, moviendo. Debe quedar espesa.',
+  '<b>2.</b> Apaga y <b>déjala enfriar</b>. Esto importa: si le echas la proteína caliente, se corta y queda grumosa.',
+  '<b>3.</b> Cuando esté tibia, reparte en 3 frascos y mezcla 1 scoop de ISO 100 en cada uno.',
+  '<b>4.</b> Tapa y guarda en la nevera. Aguanta 4 días.',
+  '<b>5.</b> En la mañana le agregas la fruta y los frutos secos encima. Se come fría o tibia.']],
+ ['Receta · Torta de avena y clara','Congelable, para el colegio',[
+  '<b>Ingredientes:</b> 150 g de avena en hojuelas, 8 claras de huevo, 1 banano maduro, canela, 1 cdta de polvo de hornear.',
+  '<b>1.</b> Machaca el banano con un tenedor hasta que quede puré.',
+  '<b>2.</b> Mezcla todo en un bol hasta que no queden grumos. Si queda muy espeso, agrega un chorrito de leche.',
+  '<b>3.</b> Vierte en un molde engrasado con una gota de aceite.',
+  '<b>4.</b> Horno a 180 °C por 25 minutos, o en sartén tapada a fuego bajo 12 minutos por lado.',
+  '<b>5.</b> Deja enfriar, <b>corta en 4 porciones</b> y congélalas separadas con papel. Se descongelan solas en el bolso.']],
+ ['Receta · Pollo y res en lote','La base de toda la semana',[
+  '<b>1.</b> Pon el pollo (o la res) en una olla con agua que lo cubra, cebolla larga, un diente de ajo entero, laurel, comino y poca sal.',
+  '<b>2.</b> Fuego bajo y tapado: 25 minutos el pollo, 45 la res.',
+  '<b>3.</b> Saca la carne, <b>guarda el caldo</b> en un frasco: te sirve para sopas y para recalentar sin que se seque.',
+  '<b>4.</b> Desmecha con dos tenedores mientras esté tibia — en frío cuesta el doble.',
+  '<b>5.</b> Porciona en bolsitas de 100 g. Tres en la nevera, el resto al congelador.',
+  '<b>Para recalentar:</b> sartén con dos cucharadas del caldo, 2 minutos. Nunca queda seca así.']],
+ ['Receta · Pescado al horno en 15 minutos','Cero complicación',[
+  '<b>1.</b> Precalienta el horno a 180 °C.',
+  '<b>2.</b> Pon el filete sobre papel aluminio. Encima: jugo de medio limón, cúrcuma, jengibre rallado, pimienta y 1 cdta de aceite de oliva.',
+  '<b>3.</b> Cierra el papel como un paquete. Así se cocina al vapor y no se seca.',
+  '<b>4.</b> Al horno 12 a 15 minutos. Está listo cuando se desmenuza con el tenedor.',
+  '<b>Si no quieres prender el horno:</b> el mismo paquete va en sartén tapada a fuego medio, 10 minutos.']],
+ ['Receta · Chucrut casero','Tu fermento vivo, por casi nada',[
+  '<b>Ingredientes:</b> 1 repollo mediano y sal (20 g de sal por cada kilo de repollo, más o menos 1 cda colmada).',
+  '<b>1.</b> Quita las hojas de afuera y guárdalas. Corta el resto en tiras finas.',
+  '<b>2.</b> Ponlo en un bol con la sal y <b>amásalo con las manos 8 a 10 minutos</b>, hasta que suelte bastante agua. Esa agua es la salmuera: no la botes.',
+  '<b>3.</b> Mete todo en un frasco de vidrio limpio, presionando fuerte para que el líquido cubra el repollo por completo.',
+  '<b>4.</b> Tapa con una de las hojas enteras y pon un peso encima (un frasco pequeño con agua sirve).',
+  '<b>5.</b> Tapa flojo y déjalo a temperatura ambiente, lejos del sol, <b>de 5 a 7 días</b>. Verás burbujas: eso es que está fermentando bien.',
+  '<b>6.</b> Pruébalo. Cuando esté ácido a tu gusto, tapa bien y a la nevera. Dura meses.',
+  '<b>Dos cdas por comida.</b> Si alguna vez huele mal o se ve mohoso en la superficie, se bota y se empieza de nuevo.']],
+ ['Receta · Bolitas de ISO 100','Para el bolso, sin horno',[
+  '<b>Ingredientes:</b> 100 g de avena, 2 scoops de ISO 100, 2 cdas de mantequilla de maní, 10 g de cacao 70 % rallado, leche al ojo.',
+  '<b>1.</b> Mezcla la avena, la proteína y el cacao en seco.',
+  '<b>2.</b> Agrega la mantequilla de maní y leche poco a poco, hasta que la masa se deje moldear sin pegarse.',
+  '<b>3.</b> Forma bolitas del tamaño de una nuez. Salen unas 12.',
+  '<b>4.</b> Nevera 1 hora y listo. Dos bolitas equivalen más o menos a media toma de media mañana.']]
+],
+
+educacion: [
+ ['La báscula va a subir — y esa es la meta','Léelo el primer lunes',[
+  '<b>Vas a pesar más al terminar esta fase. Eso es el éxito, no el fracaso.</b>',
+  'Tres cosas suben el número sin que suba la grasa: la creatina llena el músculo de agua <b>por dentro</b>, el músculo nuevo pesa, y comer 2.050 kcal llena el depósito de glucógeno.',
+  'Tu número de verdad sigue siendo la cintura: <b>64 cm</b>. Si el peso sube y la cintura se queda igual, ganaste músculo. Punto.',
+  'Pésate una vez por semana, el mismo día, en ayunas y después del baño. Más seguido solo da ansiedad.']],
+ ['Las cuatro combinaciones','Lo que pediste aprender',[
+  '<b>Cada plato lleva cuatro cosas. Si están las cuatro, el plato está bien armado — no necesitas calcular nada.</b>',
+  '<b>1 · Proteína completa.</b> Huevo, pollo, res, pescado o ISO 100. Es la señal que construye músculo y la que más llena.',
+  '<b>2 · Carbohidrato.</b> Arroz, papa, plátano, pasta, avena, yuca. Es la gasolina del entreno y lo que evita que el cuerpo queme músculo.',
+  '<b>3 · Grasa buena.</b> Aceite de oliva, aguacate, nueces o maní. Sin ella no absorbes la vitamina D ni el omega-3.',
+  '<b>4 · Verdura o fruta + un fermentado.</b> Chucrut, kéfir, kumis o yogur. Fibra y bacterias vivas en la misma comida.',
+  '<b>Y el orden dentro del plato:</b> primero la verdura, después la proteína y la grasa, y el arroz o la papa <b>de último</b>. Eso aplana el pico de azúcar sin que tengas que quitar nada. Con el antecedente de diabetes de tu papá, es lo más rentable que puedes hacer gratis.']],
+ ['Creatina, en dos líneas','Qué es y qué no es',[
+  '<b>Es el suplemento con más evidencia para ganar fuerza y músculo, y de los más baratos que existen.</b>',
+  'No es una hormona ni un esteroide. Es una molécula que tu propio cuerpo fabrica y que también está en la carne; el suplemento solo llena el depósito del músculo.',
+  '<b>3 g al día, todos los días</b>, entrenes o no. No hay que "cargar" ni descansar entre ciclos.',
+  'Pide <b>creatina monohidrato</b>, sin sabor. Las versiones con nombres raros cuestan más y no rinden más.',
+  'Necesita agua para funcionar: por eso esta fase insiste tanto en los 2 litros.']],
+ ['El agua: tu palanca más barata','De menos de 1 litro a 2',[
+  '<b>En el test dijiste que tomas menos de un litro al día. Es lo más fácil de arreglar de todo tu plan y lo que más rinde.</b>',
+  'Con poca agua: tránsito lento, dolor de cabeza, menos fuerza en el entreno y la creatina trabajando a medias.',
+  '<b>Cómo llegar sin esfuerzo:</b> un vaso lleno en cada una de tus 5 tomas (1,2 L) + una botella de 600 mL en el bolso del colegio + el vaso del entreno. Ya son 2 litros sin pensarlo.',
+  'Agua, aromática, lulo o limón sin azúcar cuentan. El café no cuenta.']],
+ ['Por qué cinco tomas y no tres','El umbral de la proteína',[
+  '<b>El músculo no se construye con el total del día. Se construye cada vez que una comida pasa cierto umbral de proteína.</b>',
+  'Ese umbral son unos 25 a 30 g de proteína de buena calidad. Por debajo, la comida alimenta pero no da la orden de construir.',
+  'Con cinco tomas de 25–35 g das esa orden <b>cinco veces al día</b>. Con el mismo total metido en dos comidas, la darías una sola vez.',
+  'Por eso el desayuno no se negocia y por eso el almuerzo no se salta.']],
+ ['El único azúcar que sobra','El añadido, no el de la fruta',[
+  '<b>La fruta no es el problema. El azúcar añadido sí.</b>',
+  'La fruta trae fibra, agua y vitaminas que frenan la absorción. La gaseosa y el jugo de caja traen lo mismo sin ningún freno — y en tres veces la cantidad.',
+  '@azucar',
+  'Por eso en tu lista roja no hay ninguna fruta. Están las gaseosas, los jugos de caja, el azúcar añadido y los edulcorantes.']]
+],
+azucar: [['1 taza de papaya',11],['1 cucharada de azúcar',12],['1 gaseosa de 350 mL',39,1]],
+notaEduca: '<b>Lo que más valoraste de este proceso fue «aprender a ser constante y descubrir que se pueden cumplir metas».</b> Esta fase es exactamente esa prueba: 33 días comiendo completo y entrenando cuatro veces por semana. No te pido perfección — te pido el 85 % de los días, como siempre.',
+
+extraTitulo: 'Semáforo',
+extraIntro: 'Después de la reintroducción toleras todo. Tu lista hoy es casi toda verde: esto es un mapa de porciones, no de prohibiciones.',
+semaforo: [
+ ['Pollo','v'],['Res magra','v'],['Tilapia','v'],['Bocachico','v'],['Salmón','v'],
+ ['Atún al agua','v'],['Huevo','v'],['Claras de huevo','v'],['ISO 100','v'],['Queso campesino','v'],
+ ['Arroz','v'],['Pasta','v'],['Avena','v'],['Papa','v'],['Plátano','v'],['Yuca','v'],
+ ['Mazorca','v'],['Arepa de choclo','v'],['Arepa de Sary','v'],['Lenteja','v'],['Fríjol','v'],
+ ['Pan integral','a','1 tajada'],['Granola sin azúcar','a','30 g'],
+ ['Remolacha','v'],['Zanahoria','v'],['Espinaca','v'],['Habichuela','v'],['Tomate','v'],
+ ['Pepino','v'],['Lechuga','v'],['Cebolla larga','v'],['Cebolla cabezona','v'],['Ajo','v'],['Chucrut','v'],
+ ['Papaya','v'],['Piña','v'],['Fresa','v'],['Mora','v'],['Kiwi','v'],['Banano','v'],
+ ['Naranja','v'],['Lulo','v'],['Mandarina','v'],['Mango','a','100 g'],['Uva','a','12 unidades'],
+ ['Yogur griego','v'],['Kéfir','v'],['Kumis','v'],['Leche deslactosada','a','1 vaso'],
+ ['Aceite de oliva','a','1 cdta'],['Aguacate','a','⅓ de unidad'],['Nueces','a','20 g'],
+ ['Almendras','a','15 g'],['Chía','a','1 cda'],['Mantequilla de maní','a','1 cda'],
+ ['Cacao 70 %','a','10 g'],['Café','a','2 tazas, última 1 pm'],['Panela o miel','a','1 cdta'],
+ ['Azúcar añadido','r'],['Gaseosas','r'],['Jugos de caja','r'],
+ ['Edulcorantes (sucralosa, aspartamo)','r'],['Ultraprocesados','r'],['Comidas rápidas','r'],
+ ['Alcohol','r'],
+ ['Brócoli','r','por tu gusto'],['Coliflor','r','por tu gusto'],['Calabacín','r','por tu gusto'],
+ ['Arvejas','r','por tu gusto'],['Pimentón','r','por tu gusto'],['Semillas de girasol','r','por tu gusto']
+],
+etiquetas: {v:'Libre', a:'Por porción', r:'Fuera'},
+extraFolds: [
+ ['Día de fuerza y día normal','El único ciclado que te aplica',[
+  '<b>En esta fase la comida se mueve con el entrenamiento. Nunca hacia abajo.</b>',
+  '<b>Lunes, martes, jueves y viernes (entrenas):</b> porción grande de arroz, pasta, papa o plátano en el almuerzo, y el batido de ISO 100 a las 5:15.',
+  '<b>Miércoles, sábado y domingo (descansas):</b> porción normal de carbohidrato y, a la misma hora del batido, yogur con fruta.',
+  'Las calorías del día son casi las mismas. Lo único que cambia es <b>dónde</b> va el carbohidrato.',
+  '<b>Lo que nunca cambia es la proteína.</b> Esa va igual los siete días, entrenes o no.']],
+ ['Lo rojo ya no es FODMAP','Ahora son bloqueadores de saciedad',[
+  '<b>Después de la reintroducción toleras todo: cebolla, ajo, trigo, leche, fríjol. Nada de eso está prohibido ya.</b>',
+  'Lo que queda en rojo son cosas que trabajan en contra de tus hormonas de la saciedad: azúcar añadido, gaseosas, jugos de caja, edulcorantes, ultraprocesados, comidas rápidas y alcohol.',
+  'No es un tema moral. Con esos, el hambre y el azúcar en sangre se desordenan y el entreno rinde menos.',
+  'El brócoli, la coliflor, el calabacín, las arvejas, el pimentón y las semillas de girasol están afuera <b>solo porque no te gustan</b>. Si algún día los quieres, entran sin problema.']],
+ ['Comer fuera y el día libre','Una comida libre, no un día libre',[
+  '<b>Sigue valiendo una comida libre a la semana, y sigue estando contada en el plan.</b>',
+  'Pide lo que quieras y arma el plato con la regla de la mano: una palma de proteína, un puño de carbohidrato, verdura libre. Con eso ya está.',
+  '<b>Lo que arruina un proceso nunca es la comida de más: es ayunar al día siguiente.</b> Vuelves al plan en la siguiente toma, sin compensar y sin castigo.']],
+ ['Después del 4 de diciembre','Cuando se acaba el programa',[
+  '<b>El día 100 no es una meta de llegada: es el día en que el plan pasa a ser tuyo.</b>',
+  '<b>Lo que sostienes aunque ya no estés en un programa:</b> proteína en cada comida, fuerza 3 o 4 veces por semana, 8.000 pasos, 2 litros de agua, dormir 7 horas y luz natural en la primera hora del día. Esos seis hábitos son casi todo el resultado.',
+  '<b>La comida no se recorta al terminar.</b> Como tu peso sigue siendo bajo, mantienes las 2.050 kcal mientras sigas entrenando. Si en algún momento dejas de entrenar, bajas un poco el carbohidrato de los días de fuerza y nada más.',
+  '<b>Qué medir después:</b> cintura y peso una vez al mes, el mismo día y en ayunas. Fotos de frente y perfil cada tres meses. Y que las cargas del entreno sigan subiendo — ese es el indicador que menos engaña.',
+  '<b>Vuelve a consulta si:</b> pierdes peso sin buscarlo, vuelve la hinchazón diaria, el sueño baja de 6 horas varias semanas seguidas, o aparece debilidad, frío constante o caída de cabello.',
+  '<b>Laboratorios de control:</b> en 3 a 6 meses — hemograma, ferritina, vitamina D, glucemia y perfil lipídico.']]
+],
+notaExtra: '<b>Esta lista es tu mapa final.</b> Al terminar los 100 días, esto es lo que te llevas: no una dieta, sino saber qué te cae bien, en qué porción y con qué combinarlo. Eso no se acaba el 4 de diciembre.',
+
+preguntas: [
+ ['¿La creatina me va a engordar?','<b>No engorda: hidrata el músculo.</b> La creatina mete agua <b>dentro</b> de la fibra muscular, no debajo de la piel. Vas a ver entre 0,5 y 1 kg más en la báscula la primera semana, y eso es justo lo que buscamos: músculo más lleno, no grasa. La cintura no se mueve por esto.'],
+ ['¿Qué hago el día que no alcanzo a almorzar?','<b>Comida de bolsillo, nunca ayuno.</b> 1 scoop de ISO 100 + 1 banano + 20 g de nueces + 1 arepa o torta de avena congelada + 1 cda de mantequilla de maní. Diez minutos, sin plato ni calentar: unos 32 g de proteína y 480 kcal. Déjalo armado en el bolso desde el domingo.'],
+ ['¿Puedo entrenar si me duele la rodilla?','<b>Sí, en el rango que no duela.</b> Nada de saltos, trote ni escaleras de entrenamiento. Sentadilla hasta donde no moleste, puente de glúteo, banda elástica y abdomen. Si el dolor pasa de molestia a limitarte para caminar, paras ese ejercicio y me escribes el mismo día.'],
+ ['¿Y si la báscula sube más de lo esperado?','<b>Mira la cintura antes de preocuparte.</b> Peso arriba + cintura igual o abajo = músculo y agua intramuscular: vamos bien. Peso arriba + cintura arriba tres semanas seguidas = lo revisamos juntas en la cita. La meta de esta fase es llegar a 42–43 kg manteniendo los 64 cm de cintura.'],
+ ['¿Puedo tomar café antes de entrenar?','<b>En esta fase, no.</b> Entrenas a las 4:00 p. m. y duermes a las 9:30: la cafeína de la tarde te quita el sueño profundo, que es justo cuando se construye el músculo. Dos tazas al día máximo y la última a la 1:00 p. m. Tu energía del entreno sale del almuerzo, no de la taza.']
+],
+
+alertas: 'vuelves a perder peso dos semanas seguidas · pasas un día entero sin almorzar · el dolor de rodilla te limita para caminar · el ánimo baja de forma marcada (eso se habla también con tu médico de la sertralina) · llegan los resultados de anti-TPO · se te está acabando la creatina o el ISO 100',
+
+firma: 'ND. MsC. Sara C. Marmolejo',
+firmaSub: 'Nutricionista Dietista, énfasis clínico'
+};
+
+/* ══ BLOQUE C · MOTOR — NO HACE FALTA TOCARLO ═══════════════════════ */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const CHECK='<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.2 3.2L12 4.5"/></svg>';
+const F=FASES[A.fase], KEY='t100-'+A.fase+'-'+A.nombre.replace(/\W/g,'');
+const esc=s=>s;
+document.documentElement.setAttribute('data-fase',A.fase);
+
+const SECS=[];
+function sec(id,nombre,titulo,intro,html){
+  SECS.push([id,nombre]);
+  return `<section id="${id}"><div class="sec-h"><span class="n">${String(SECS.length).padStart(2,'0')}</span>
+    <h2>${titulo}</h2></div>${intro?`<p class="sec-p">${intro}</p>`:''}${html}</section>`;
+}
+const fold=(t,s,ps,ic='')=>`<div class="fold"><button aria-expanded="false">
+  <span class="ic${ic.length>3?' h mono':''}">${ic||'·'}</span>
+  <span class="tt">${t}${s?`<small>${s}</small>`:''}</span><span class="ch">▾</span></button>
+  <div class="body" hidden>${ps.map(p=>p==='@azucar'?'<div class="sugar"></div>':`<p>${p}</p>`).join('')}</div></div>`;
+const nota=(h,k='')=>`<div class="note ${k}">${h}</div>`;
+
+/* ---------- encabezado ---------- */
+document.body.insertAdjacentHTML('afterbegin',`
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">Transformación 100 Días · Fase ${A.fase} de 3 · ${F.corto}</p>
+  <h1>${F.titulo}</h1>
+  <p class="lede"><b>${A.nombre}</b> · ${F.dias.toLowerCase()} · ${A.inicio} al ${A.fin}.
+    No tienes que leer todo hoy: toca lo que necesites, cuando lo necesites.</p>
+  <div class="cita"><q>${A.cita}</q><cite>${A.citaDe}</cite></div>
+  <div class="tiles">${A.tiles.map(t=>`<div class="tile"><b>${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+</div></header>
+<nav class="nav" aria-label="Secciones"><div class="scroll" id="nav"></div></nav>
+<main class="wrap" id="main"></main>
+<footer><div class="wrap"><b>${A.firma}</b>${A.firmaSub}<br>
+  Fase ${A.fase} · ${F.nom} · ${A.inicio} al ${A.fin}</div></footer>`);
+
+/* ---------- secciones ---------- */
+$('#main').innerHTML=
+ sec('empieza','Empieza aquí','Empieza aquí','',
+  `<div class="carta">${A.mensaje.map(p=>`<p>${p}</p>`).join('')}
+   <div class="firma-carta"><span class="rub">${A.mensajeFirma}</span>
+     <span>${A.firma}<br>${A.firmaSub}</span></div></div>
+   <div class="fase-card"><div class="ttl">Fase ${A.fase} de 3 · ${F.nom}</div>
+     <p>${F.obj}</p>
+     <p style="margin-bottom:0"><b>Por qué ahora:</b> ${F.porque}</p></div>
+   <div class="ruta">${[1,2,3].map(n=>`<div class="${n===A.fase?'now':n<A.fase?'done':''}">
+     <b>Fase ${n}</b>${SEC[n-1]}</div>`).join('')}</div>`
+  +A.arranque.map((c,i)=>fold(c[0],c[1],c[2],['↑','=','!'][i])).join('')
+  +fold('Qué vas a notar al terminar esta fase','Resultado esperado',
+     ['· '+F.espera.join('<br>· '),
+      '<b>Una aclaración para tu caso:</b> donde dice "menos grasa", en ti significa <b>menos contorno de abdomen</b>, no menos kilos. Tu peso debe subir. El indicador es la cintura.'],'★')
+  +nota(A.notaArranque))
++sec('dia','Tu día','Tu día','Tu horario completo. Marca lo que cumplas — se guarda en este teléfono.',
+  `<div class="tl" id="tl"></div>`+nota(A.notaDia)
+  +`<h3 class="sub-h">Tus suplementos</h3><div class="tabla">`
+  +A.suplementos.map(x=>`<div class="tr"><span class="h mono">${x[0]}</span>
+     <span class="nm3"><b>${x[1]}</b><small>${x[4]}</small></span>
+     <span class="ds mono">${x[2]}</span>
+     <span class="st ${x[3]}">${{sigue:'Sigue',nuevo:'Nuevo',para:'Fuera',opc:'Opcional'}[x[3]]}</span></div>`).join('')
+  +`</div>`+A.suplFolds.map((f,i)=>fold(f[0],f[1],f[2],['℞','⇄','⌖'][i])).join(''))
++sec('comidas','Qué como','Qué como','Un día a la vez. El gramaje es <b>en cocido</b>, y la medida casera manda.',
+  `<div class="days" id="days" role="tablist"></div><div id="meals"></div>`+nota(A.notaDias))
++sec('cambiar','Cambiar','Cambiar','Esto hace que 7 días te duren 33. <b>Toca un alimento</b> y te digo por cuáles cambiarlo.',
+  `<div class="bud" id="bud"></div>`+nota(A.reglaCambio,'alert')+
+  `<div class="filters" id="gfilters"></div><div id="swap"></div>`+fold(...A.estirar,'∞'))
++sec('mercado','Mercado','Mercado','Lo de la semana. Toca para ir tachando. Abajo están las recetas paso a paso.',
+  `<div class="mk-bar"><span id="mk-count"></span><button id="mk-reset">Destachar todo</button></div>
+   <div id="mkt"></div>`+A.mercadoFolds.map((f,i)=>fold(...f,['◷','⌖'][i])).join(''))
++sec('aprender','Aprender','Aprender','Seis ideas, una por tarjeta. Y una herramienta para usar cuando dudes.',
+  `<div class="tool" id="tool"></div><div style="height:13px"></div>`
+  +A.educacion.map((e,i)=>fold(e[0],e[1],e[2],String(i+1))).join('')+nota(A.notaEduca,'ok'))
++sec('extra',A.extraTitulo,A.extraTitulo,A.extraIntro,
+  `<input class="search" id="q" type="search" placeholder="Busca un alimento…" aria-label="Buscar alimento">
+   <div class="filters" id="filters"></div><div class="foods" id="foods"></div>`
+  +A.extraFolds.map(f=>fold(...f,'◆')).join('')+nota(A.notaExtra))
++sec('dudas','Dudas','Dudas','',
+  A.preguntas.map(q=>fold(q[0],'',[q[1]],'?')).join('')
+  +`<div class="cierre">${nota('<b>Escríbeme el mismo día si…</b> '+A.alertas
+    +'. <b>Ninguna significa que lo estés haciendo mal:</b> significan que hay que ajustar, y ajustar casi siempre es comer un poco más.','alert')}</div>`);
+
+$('#nav').innerHTML=SECS.map(([id,n],i)=>
+  `<a href="#${id}"${i===0?' class="on"':''}>${n}</a>`).join('');
+
+/* ---------- plegables ---------- */
+function bindFolds(root=document){
+  $$('.fold>button',root).forEach(b=>{
+    if(b.dataset.b) return; b.dataset.b=1;
+    b.addEventListener('click',()=>{
+      const f=b.parentElement, body=$('.body',f), open=f.classList.toggle('open');
+      b.setAttribute('aria-expanded',open); body.hidden=!open;
+      if(open && $('.sugar',f)) drawSugar($('.sugar',f));
+    });
+  });
+}
+bindFolds();
+
+/* ---------- timeline ---------- */
+const hoy=()=>new Date().toISOString().slice(0,10);
+let done=store.get(KEY+'-dia-'+hoy(),[]);
+const claves=A.dia.map((d,i)=>d[3]?i:-1).filter(i=>i>=0);
+function drawTL(){
+  $('#tl').innerHTML=A.dia.map((d,i)=>`<div class="tl-row${d[3]?' key':''}">
+    <div class="t mono">${d[0]}</div><div class="c"><b>${d[1]}</b><span>${d[2]}</span></div>
+    <button class="chk" aria-pressed="${done.includes(i)}" aria-label="Marcar ${d[1]}">${CHECK}</button></div>`).join('')
+   +`<div class="tl-foot"><span id="tl-count"></span><button id="tl-reset">Empezar de nuevo</button></div>`;
+  $$('#tl .chk').forEach((b,i)=>b.addEventListener('click',()=>{
+    done=done.includes(i)?done.filter(x=>x!==i):[...done,i];
+    b.setAttribute('aria-pressed',done.includes(i));
+    store.set(KEY+'-dia-'+hoy(),done); cuenta();
+  }));
+  $('#tl-reset').addEventListener('click',()=>{done=[];store.set(KEY+'-dia-'+hoy(),done);drawTL()});
+  cuenta();
+}
+function cuenta(){
+  const h=claves.filter(i=>done.includes(i)).length, t=claves.length;
+  $('#tl-count').innerHTML = h===t ? '<strong>Todo cumplido.</strong> Eso es el día.'
+    : `<strong>${h} de ${t}</strong> — lo único que cuenta de verdad.`;
+}
+drawTL();
+
+/* ---------- los 7 días ---------- */
+let dSel=0;
+function drawDays(){
+  $('#days').innerHTML=A.dias.map((d,i)=>{const [dw,...r]=d[0].split(' ');
+    return `<button class="day-b${i===dSel?' on':''}" role="tab" aria-selected="${i===dSel}">
+      <b>${dw}</b><span>${r.join(' ')}</span></button>`}).join('');
+  $$('.day-b').forEach((b,i)=>b.addEventListener('click',()=>{dSel=i;drawDays();drawMeals()}));
+}
+function drawMeals(){
+  const d=A.dias[dSel];
+  $('#meals').innerHTML=d[5].map(t=>`<div class="meal">
+    <div class="meal-h"><span class="hh">${t[0]}</span><span class="nn">${t[1]}</span>
+      <span class="kk">${t[2]} kcal<br>${t[3]} g proteína</span></div>
+    <ul>${t[4].map(it=>{const m=it.match(/^(.*?)\s(\d+\s*g\s*\(.*\))$/);
+      return `<li><span>${m?m[1]:it} ${m?`<em>${m[2]}</em>`:''}</span></li>`}).join('')}</ul>
+    ${t[5]?`<div class="alc"><b>Ya contado en tu plan:</b> ${t[5]}. No hay que compensarlo.</div>`:''}
+  </div>`).join('')
+  +nota(`<b>${d[2]}</b> · Total del día: ${d[3]} kcal · ${d[4]} g de proteína.`);
+}
+drawDays(); drawMeals();
+
+/* ---------- intercambios ---------- */
+let gSel=0, ref=null;
+$('#bud').innerHTML=A.grupos.map(g=>`<div><b>${g[1]}</b><span>${g[0]}</span></div>`).join('');
+$('#gfilters').innerHTML=A.grupos.map((g,i)=>
+  `<button class="fchip${i===0?' on':''}" data-g="${i}">${g[0]}</button>`).join('');
+$$('#gfilters .fchip').forEach(b=>b.addEventListener('click',()=>{
+  gSel=+b.dataset.g; ref=null;
+  $$('#gfilters .fchip').forEach(x=>x.classList.toggle('on',x===b)); drawSwap();
+}));
+function drawSwap(){
+  const g=A.grupos[gSel], libre=g[3];
+  const head = libre
+    ? `Estas <b>no se cuentan</b>. Son las que llenan el plato. Si un día tienes más hambre de la
+       esperada, este es el grupo del que puedes repetir sin pensarlo.`
+    : ref!==null
+      ? `En vez de <b>${g[4][ref][0]}</b> (${g[4][ref][1]}), puedes usar cualquiera de las otras.
+         Toca de nuevo para quitar la referencia.`
+      : `<b>${g[1]} porciones al día.</b> Cada una de estas vale lo mismo: ${g[2]}. Toca una para
+         compararla con el resto.`;
+  $('#swap').innerHTML=`<div class="sw-head">${head}</div><div class="sw-list">`+
+    g[4].map((it,i)=>`<button class="sw${ref===i?' on':''}"${libre?' disabled style="cursor:default"':''}>
+      <span class="nm2">${it[0]}</span><span class="pr">${it[1]}</span></button>`).join('')+`</div>`;
+  if(!libre) $$('#swap .sw').forEach((b,i)=>b.addEventListener('click',()=>{ref=ref===i?null:i;drawSwap()}));
+}
+drawSwap();
+
+/* ---------- mercado ---------- */
+let got=store.get(KEY+'-mkt',[]);
+const TOT=A.mercado.reduce((a,g)=>a+g[1].length,0);
+function drawMkt(){
+  $('#mkt').innerHTML=A.mercado.map(([t,items],gi)=>`<div class="mk-grp"><h3>${t}</h3><div class="mk-list">`+
+    items.map((it,i)=>{const id=gi+'-'+i;
+      return `<button class="mk${got.includes(id)?' got':''}" data-id="${id}" aria-pressed="${got.includes(id)}">
+        <span class="chk" aria-hidden="true">${CHECK}</span>
+        <span class="nm2">${it[0]}</span><span class="qt">${it[1]}</span></button>`}).join('')+
+    `</div></div>`).join('');
+  $$('#mkt .mk').forEach(b=>{
+    $('.chk',b).setAttribute('aria-pressed', b.classList.contains('got'));
+    b.addEventListener('click',()=>{const id=b.dataset.id;
+      got=got.includes(id)?got.filter(x=>x!==id):[...got,id];
+      store.set(KEY+'-mkt',got); drawMkt();});
+  });
+  $('#mk-count').innerHTML = got.length===TOT ? '<strong>Mercado completo.</strong>'
+    : `<strong>${got.length} de ${TOT}</strong> en el carrito`;
+}
+$('#mk-reset').addEventListener('click',()=>{got=[];store.set(KEY+'-mkt',got);drawMkt()});
+drawMkt();
+
+/* ---------- ¿hambre real? ---------- */
+const PREG=[
+ ['¿Te comerías un plato de pollo con verduras ahora mismo?','La pregunta no es si te provoca. Es si te lo comerías.',['Sí, me lo como',0],['No. Yo quiero otra cosa',1]],
+ ['¿Dónde lo sientes?','Cierra los ojos un segundo y ubícalo.',['En el estómago, el cuerpo',0],['De la garganta hacia arriba',1]],
+ ['¿Puede esperar 20 minutos?','No tienes que esperarlos. Solo responde si podrías.',['Sí, podría',0],['No, quiero que sea ahora',1]]];
+let paso=0, pts=0;
+function drawTool(){
+  const t=$('#tool');
+  if(paso<PREG.length){
+    const p=PREG[paso];
+    t.innerHTML=`<div class="steps">${PREG.map((_,i)=>`<i class="${i<=paso?'on':''}"></i>`).join('')}</div>
+      <div class="q">${p[0]}</div><p class="q-sub">${p[1]}</p>
+      <div class="opts">${[p[2],p[3]].map(o=>`<button class="opt" data-v="${o[1]}">${o[0]}</button>`).join('')}</div>`;
+    $$('.opt',t).forEach(b=>b.addEventListener('click',()=>{pts+=+b.dataset.v;paso++;drawTool()}));
+  } else {
+    const fis=pts<=1;
+    t.innerHTML=`<div class="verdict">
+      <span class="pill ${fis?'fis':'emo'}">${fis?'Hambre física':'Probablemente emocional'}</span>
+      <div class="big">${fis?'Come.':'Dale 20 minutos.'}</div>
+      <p>${fis?'Tu cuerpo está pidiendo comida de verdad. En esta fase eso no se aguanta: sube verdura libre, una fruta y una cda de mantequilla de maní, y cuéntamelo en la próxima cita.'
+             :'Pon un temporizador y haz algo con las manos. El hambre física espera; esta casi siempre se va. <strong>Y si a los 20 minutos sigue ahí, cómetelo</strong>: sentada, en plato, sin pantalla. No es una falla. Es información.'}</p>
+      <button class="restart">Volver a empezar</button></div>`;
+    $('.restart',t).addEventListener('click',()=>{paso=0;pts=0;drawTool()});
+  }
+}
+drawTool();
+
+/* ---------- azúcar ---------- */
+function drawSugar(el){
+  if(!el||el.dataset.d) return; el.dataset.d=1;
+  const max=Math.max(...A.azucar.map(s=>s[1]));
+  el.innerHTML=A.azucar.map(s=>`<div class="bar-row${s[2]?' bad':''}">
+    <span>${s[0]}</span><span class="bar-track"><span class="bar-fill" data-w="${s[1]/max*100}"></span></span>
+    <span class="g">${s[1]} g</span></div>`).join('');
+  requestAnimationFrame(()=>setTimeout(()=>
+    $$('.bar-fill',el).forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',i*110)),60));
+}
+
+/* ---------- semáforo ---------- */
+let filt='t';
+function drawFoods(){
+  const q=$('#q').value.trim().toLowerCase();
+  const l=A.semaforo.filter(f=>(filt==='t'||f[1]===filt)&&(!q||f[0].toLowerCase().includes(q)));
+  $('#foods').innerHTML = l.length
+    ? l.map(f=>`<span class="food ${f[1]}"><i></i>${f[0]}${f[2]?` <small>${f[2]}</small>`:''}</span>`).join('')
+    : `<p class="empty">No tengo ese en la lista. Pregúntamelo en la próxima cita y lo ubicamos.</p>`;
+}
+$('#filters').innerHTML=[['t','Todos'],...Object.entries(A.etiquetas)]
+  .map(([k,l])=>`<button class="fchip${k==='t'?' on':''}" data-k="${k}">${l}</button>`).join('');
+$$('#filters .fchip').forEach(b=>b.addEventListener('click',()=>{
+  filt=b.dataset.k; $$('#filters .fchip').forEach(x=>x.classList.toggle('on',x===b)); drawFoods();}));
+$('#q').addEventListener('input',drawFoods);
+drawFoods();
+
+/* ---------- nav activa ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)
+  $$('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}),
+  {rootMargin:'-20% 0px -70% 0px'});
+$$('section').forEach(s=>io.observe(s));
+
+</script>
+</body>
+</html>

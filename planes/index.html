@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Transformación</title>
+<style>
+:root{--paper:#fbf9f7;--surface:#fff;--line:#e7e0dc;--ink:#231a1e;--ink-2:#6b5d62;--ink-3:#978a8e;--acc:#5b2740;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--paper:#151013;--surface:#1e171b;--line:#352b30;--ink:#f3ecef;--ink-2:#b3a3aa;--ink-3:#8a7a81;--acc:#e9a7c0;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);display:grid;place-items:center;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding-left:max(24px,env(safe-area-inset-left,0px));
+  padding-right:max(24px,env(safe-area-inset-right,0px));padding-block:40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:34px 30px;max-width:420px;text-align:center}
+.mark{width:46px;height:46px;border-radius:13px;background:var(--acc);margin:0 auto 20px;
+  display:grid;place-items:center;color:#fff;font-size:19px;font-weight:700;letter-spacing:-.02em}
+@media (prefers-color-scheme:dark){.mark{color:#231a1e}}
+h1{font-size:19px;margin:0 0 10px;letter-spacing:-.01em}
+p{margin:0 0 8px;color:var(--ink-2);font-size:14.5px;line-height:1.55}
+p.small{color:var(--ink-3);font-size:12.5px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark">T</div>
+    <h1>Transformación</h1>
+    <p>Los planes de este espacio son privados y cada uno se abre con su propio enlace.</p>
+    <p>Si llegaste aquí buscando el tuyo, revisa el enlace que te envié: debe tener algo escrito después de la dirección.</p>
+    <p class="small">ND. MsC. Sara C. Marmolejo<br>Nutricionista Dietista, énfasis clínico</p>
+  </div>
+</body>
+</html>
